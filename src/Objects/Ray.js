@@ -3,6 +3,8 @@
 
     Jyo.Ray = function () {
         /// <summary>射线构造函数</summary>
+        /// <field name="position" type="Jyo.Vector3">射线位置</field>
+        /// <field name="direction" type="Jyo.Vector3">射线方向</field>
         /// <returns type="Jyo.BoundingSphere" />
 
         constructor.apply(this, arguments);
@@ -10,7 +12,7 @@
 
     var constructor = Jyo.overload().
                       add("Jyo.Vector3, Jyo.Vector3", function (position, direction) {
-                          /// <summary>包围球构造函数</summary>
+                          /// <summary>射线构造函数</summary>
                           /// <param name="position" type="Jyo.Vector3">射线起点坐标向量</param>
                           /// <param name="direction" type="Jyo.Vector3">射线射向坐标向量</param>
                           /// <returns type="Jyo.Ray" />

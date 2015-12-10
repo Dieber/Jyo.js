@@ -3,6 +3,11 @@
 
     Jyo.Song = function () {
         /// <summary>音乐对象</summary>
+        /// <field name="isLoaded" type="Boolean">是否加载完毕</field>
+        /// <field name="duration" type="Number">音乐时长</field>
+        /// <field name="playCound" type="Number">播放次数</field>
+        /// <field name="id" type="Number">随机ID</field>
+        /// <field name="isLoop" type="Boolean">是否循环</field>
 
         this.isLoaded = false;
         this.duration = Infinity;

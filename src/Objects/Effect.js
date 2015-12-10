@@ -26,6 +26,11 @@
 
     Jyo.Effect.prototype = {
         _initProgram: function (vsSource, fsSource) {
+            /// <summary>初始化渲染程序</summary>
+            /// <param name="vsSource" type="String">顶点渲染器源码</param>
+            /// <param name="fsSource" type="String">片元渲染器源码</param>
+            /// <returns type="WebGLProgram" />
+
             var ctx = this._renderer.context;
             var program = renderer._shaderBuilder(vsSource, fsSource);
             ctx.useProgram(program);
@@ -39,55 +44,61 @@
             return program;
         },
         _apply: Jyo.overload().
-               add("CanvasRenderingContext2D, Jyo.ModelMeshPart", function (ctx, part) {
-                   /// <summary>应用效果</summary>
-                   /// <param name="ctx" type="WebGLRenderingContext">2D渲染上下文</param>
-                   /// <param name="part" type="Jyo.ModelMeshPart">模型网格部件</param>
+                add("CanvasRenderingContext2D, Jyo.ModelMeshPart", function (ctx, part) {
+                    /// <summary>应用效果</summary>
+                    /// <param name="ctx" type="WebGLRenderingContext">2D渲染上下文</param>
+                    /// <param name="part" type="Jyo.ModelMeshPart">模型网格部件</param>
 
-                   //console.log("2D模型效果应用");
-               }).
-               add("WebGLRenderingContext, Jyo.ModelMeshPart", function (gl, part) {
-                   var program = this.program;
+                    //console.log("2D模型效果应用");
+                }).
+                add("WebGLRenderingContext, Jyo.ModelMeshPart", function (gl, part) {
+                    /// <summary>应用效果</summary>
+                    /// <param name="gl" type="WebGLRenderingContext">WebGL上下文对象</param>
+                    /// <param name="part" type="Jyo.ModelMeshPart">模型网格部分对象</param>
 
-                   gl.useProgram(program);
+                    var program = this.program;
 
-                   var declaration = part.vertexBuffer.declaration;
+                    gl.useProgram(program);
 
-                   var vertexOffset = declaration.vertexStride * part.vertexOffset;
+                    var declaration = part.vertexBuffer.declaration;
 
-                   var positionOffset = 0;
-                   var normalOffset = 0;
-                   var textureCoordOffset = 0;
-                   for (var i in declaration.elements) {
-                       var el = declaration.elements[i];
-                       var usage = el.vertexElementUsage;
-                       if (usage == "Position" && !positionOffset) {
-                           positionOffset = el.offset;
-                       } else if (usage == "Normal" && !normalOffset) {
-                           normalOffset = el.offset;
-                       } else if (usage == "TextureCoordinate" && !textureCoordOffset) {
-                           textureCoordOffset = el.offset;
-                       }
-                   }
+                    var vertexOffset = declaration.vertexStride * part.vertexOffset;
 
-                   gl.vertexAttribPointer(program.vertexPositionAttribute, 3, gl.FLOAT, false, declaration.vertexStride, positionOffset + vertexOffset);
-                   gl.vertexAttribPointer(program.vertexNormalAttribute, 3, gl.FLOAT, false, declaration.vertexStride, normalOffset + vertexOffset);
-                   gl.vertexAttribPointer(program.vertexTextureCoordAttribute, 2, gl.FLOAT, false, declaration.vertexStride, textureCoordOffset + vertexOffset);
+                    var positionOffset = 0;
+                    var normalOffset = 0;
+                    var textureCoordOffset = 0;
+                    for (var i in declaration.elements) {
+                        var el = declaration.elements[i];
+                        var usage = el.vertexElementUsage;
+                        if (usage == "Position" && !positionOffset) {
+                            positionOffset = el.offset;
+                        } else if (usage == "Normal" && !normalOffset) {
+                            normalOffset = el.offset;
+                        } else if (usage == "TextureCoordinate" && !textureCoordOffset) {
+                            textureCoordOffset = el.offset;
+                        }
+                    }
 
-                   gl.enableVertexAttribArray(program.vertexPositionAttribute);
-                   gl.enableVertexAttribArray(program.vertexNormalAttribute);
-                   gl.enableVertexAttribArray(program.vertexTextureCoordAttribute);
+                    gl.vertexAttribPointer(program.vertexPositionAttribute, 3, gl.FLOAT, false, declaration.vertexStride, positionOffset + vertexOffset);
+                    gl.vertexAttribPointer(program.vertexNormalAttribute, 3, gl.FLOAT, false, declaration.vertexStride, normalOffset + vertexOffset);
+                    gl.vertexAttribPointer(program.vertexTextureCoordAttribute, 2, gl.FLOAT, false, declaration.vertexStride, textureCoordOffset + vertexOffset);
 
-                   // 世界矩阵设置
-                   gl.uniformMatrix4fv(program.worldMatrixUniform, false, this.world.to44Array());
+                    gl.enableVertexAttribArray(program.vertexPositionAttribute);
+                    gl.enableVertexAttribArray(program.vertexNormalAttribute);
+                    gl.enableVertexAttribArray(program.vertexTextureCoordAttribute);
 
-                   // 投影矩阵设置
-                   gl.uniformMatrix4fv(program.projectionMatrixUniform, false, this.projection.to44Array());
+                    // 世界矩阵设置
+                    gl.uniformMatrix4fv(program.worldMatrixUniform, false, this.world.to44Array());
 
-                   // 视图矩阵设置
-                   gl.uniformMatrix4fv(program.viewMatrixUniform, false, this.view.to44Array());
-               }),
+                    // 投影矩阵设置
+                    gl.uniformMatrix4fv(program.projectionMatrixUniform, false, this.projection.to44Array());
+
+                    // 视图矩阵设置
+                    gl.uniformMatrix4fv(program.viewMatrixUniform, false, this.view.to44Array());
+                }),
         destroy: function () {
+            /// <summary>销毁</summary>
+
             var gl = this._renderer.context;
             var program = this.program;
             var fs = program.fragmentShader;

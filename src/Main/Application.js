@@ -128,8 +128,9 @@
                     if (isWaiting) {
                         status.fireEvent("waiting", currentTime);
                     } else {
+                        status._isSuppressDraw = false;
                         !_this.isFixedTimeStep && status.fireEvent("update", currentTime);
-                        status.fireEvent("draw", currentTime);
+                        !status._isSuppressDraw && status.fireEvent("draw", currentTime);
                     }
                 }
                 fpsStatistics.call(_this, currentTime);

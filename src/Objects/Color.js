@@ -205,39 +205,47 @@
     Jyo.Color.prototype = {
         toInt32: function () {
             /// <summary>转换为32位10进制表示法</summary>
-            /// <returns type="Number"></returns>
+            /// <returns type="Number" />
 
             return (this.red << 16 | this.green << 8 | this.blue);
         },
         toHex: function () {
             /// <summary>转换为16进制表示法(无法表示Alpha值)</summary>
-            /// <returns type="String"></returns>
+            /// <returns type="String" />
 
             return "#" + this.toInt32().toString(16);
         },
         toYuvObj: function () {
+            /// <summary>转换为YUV对象</summary>
+            /// <returns type="Object" />
+
             var Y = ((66 * this.red + 129 * this.green + 25 * this.blue + 128) >> 8) + 16;
             var U = ((-38 * this.red - 74 * this.green + 112 * this.blue + 128) >> 8) + 128;
             var V = ((112 * this.red - 94 * this.green - 18 * this.blue + 128) >> 8) + 128;
             return { y: Y, u: U, v: V };
         },
         toYuv: function () {
+            /// <summary>转换为YUV表示法</summary>
+
             var yuv = this.toYuvObj();
             return "yuv(" + yuv.y + "," + yuv.u + "," + yuv.v + ")";
         },
         toRgb: function () {
             /// <summary>转换为RGB表示法</summary>
-            /// <returns type="String"></returns>
+            /// <returns type="String"  />
 
             return "rgb(" + this.red + "," + this.green + "," + this.blue + ")";
         },
         toRgba: function () {
             /// <summary>转换为RGBA表示法</summary>
-            /// <returns type="String"></returns>
+            /// <returns type="String" />
 
             return "rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.alpha + ")";
         },
         toHslObj: function () {
+            /// <summary>转换为HSL对象</summary>
+            /// <returns type="Object" />
+
             var r = this.red / 255,
                 g = this.green / 255,
                 b = this.blue / 255;
@@ -260,21 +268,21 @@
         },
         toHsl: function () {
             /// <summary>转换为HSL表示法</summary>
-            /// <returns type="String"></returns>
+            /// <returns type="String" />
 
             var hsl = this.toHslObj();
             return "hsl(" + hsl.h + "," + hsl.s + "%," + hsl.l + "%)";
         },
         toHsla: function () {
             /// <summary>转换为HSLA表示法</summary>
-            /// <returns type="String"></returns>
+            /// <returns type="String" />
 
             var hsl = this.toHslObj();
             return "hsla(" + hsl.h + "," + hsl.s + "%," + hsl.l + "%," + this.alpha + ")";
         },
         toVec4: function () {
-            /// <summary>转换为四维向量表示法</summary>
-            /// <returns type="Array"></returns>
+            /// <summary>转换为四维向量数组</summary>
+            /// <returns type="Array" />
 
             return [this.red / 255, this.green / 255, this.blue / 255, this.alpha];
         }

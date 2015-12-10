@@ -10,6 +10,8 @@
 
     var constructor = Jyo.overload().
                       add(null, function () {
+                          /// <summary>包围球构造函数</summary>
+
                           this.center = Jyo.Vector3.zero;
                           this.radius = 0;
                       }).
@@ -66,11 +68,19 @@
 
     Jyo.BoundingSphere.createFromBoundingBox = Jyo.overload().
                                                add("Jyo.BoundingBox", function (box) {
+                                                   /// <summary>根据包围盒创建包围球</summary>
+                                                   /// <param name="box" type="Jyo.BoundingBox">包围盒</param>
+                                                   /// <returns type="Jyo.BoundingShpere" />
+
                                                    var result = new Jyo.BoundingSphere();
                                                    Jyo.BoundingSphere.createFromBoundingBox(box, result);
                                                    return result;
                                                }).
                                                add("Jyo.BoundingBox, Jyo.BoundingSphere", function (box, result) {
+                                                   /// <summary>根据包围盒创建包围球</summary>
+                                                   /// <param name="box" type="Jyo.BoundingBox">包围盒</param>
+                                                   /// <param name="result" type="Jyo.BoundingShpere">结果包围球</param>
+
                                                    result.center = new Jyo.Vector3((box.min.x + box.max.x) / 2,
                                                                                    (box.min.y + box.max.y) / 2,
                                                                                    (box.min.z + box.max.z) / 2);;
@@ -145,28 +155,51 @@
     Jyo.BoundingSphere.prototype = new Jyo.Object({
         intersects: Jyo.overload().
                     add("Jyo.BoundingBox", function (box) {
+                        /// <summary>相交检测</summary>
+                        /// <param name="box" type="Jyo.BoundingBox">包围盒</param>
+                        /// <returns type="Boolean" />
+
                         return box.intersects(this);
                     }).
                     add("Jyo.BoundingSphere", function (sphere) {
+                        /// <summary>相交检测</summary>
+                        /// <param name="sphere" type="Jyo.BoundingSphere">包围球</param>
+                        /// <returns type="Boolean" />
 
                         return (Jyo.Vector3.distanceSquared(sphere.center, this.center) <= Math.pow(sphere.radius + this.radius, 2))
                     }).
                     add("Jyo.Ray", function (ray) {
+                        /// <summary>相交检测</summary>
+                        /// <param name="ray" type="Jyo.Ray">射线</param>
+                        /// <returns type="Boolean" />
+
                         return ray.intersects(this);
                     }),
         transform: Jyo.overload().
                    add("Jyo.Matrix", function (matrix) {
+                       /// <summary>变换</summary>
+                       /// <param name="matrix" type="Jyo.Matrix">矩阵</param>
+                       /// <returns type="Jyo.BoundingShpere" />
+
                        var sphere = new Jyo.BoundingSphere();
                        Jyo.Vector3.transform(this.center, matrix, sphere.center);
                        sphere.radius = this.radius * (Math.sqrt(Math.max(((matrix.m11 * matrix.m11) + (matrix.m12 * matrix.m12)) + (matrix.m13 * matrix.m13), Math.max(((matrix.m21 * matrix.m21) + (matrix.m22 * matrix.m22)) + (matrix.m23 * matrix.m23), ((matrix.m31 * matrix.m31) + (matrix.m32 * matrix.m32)) + (matrix.m33 * matrix.m33)))));
                        return sphere;
                    }).
                    add("Jyo.Matrix, Jyo.BoundingSphere", function (matrix, result) {
+                       /// <summary>变换</summary>
+                       /// <param name="matrix" type="Jyo.Matrix">矩阵</param>
+                       /// <param name="result" type="Jyo.BoundingShpere">结果包围球</param> 
+
                        Jyo.Vector3.transform(this.center, matrix, result.center);
                        result.radius = this.radius * (Math.sqrt(Math.max(((matrix.m11 * matrix.m11) + (matrix.m12 * matrix.m12)) + (matrix.m13 * matrix.m13), Math.Max(((matrix.m21 * matrix.m21) + (matrix.m22 * matrix.m22)) + (matrix.m23 * matrix.m23), ((matrix.m31 * matrix.m31) + (matrix.m32 * matrix.m32)) + (matrix.m33 * matrix.m33)))));
                    }),
         transformWorld: Jyo.overload().
                         add("Jyo.Matrix", function (transform) {
+                            /// <summary>世界变换</summary>
+                            /// <param name="transform" type="Jyo.Matrix">矩阵</param>
+                            /// <returns type="Jyo.BoundingShpere" />
+
                             var transformedSphere = new Jyo.BoundingSphere(Jyo.Vector3.zero, 0);
                             var scale3 = new Jyo.Vector3(this.radius, this.radius, this.radius);
                             Jyo.Vector3.transformNormal(scale3, transform);

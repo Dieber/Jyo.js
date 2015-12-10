@@ -1,13 +1,10 @@
-﻿/// <reference path="../Jyo.js" />
-/// <reference path="../Objects/Object.js" />
-/// <reference path="../Base/Renderer.js" />
-
-(function (window, document, Jyo, undefined) {
+﻿(function (window, document, Jyo, undefined) {
     "use strict";
 
     Jyo.Renderer.Canvas = function () {
         /// <summary>Canvas渲染器</summary>
-
+        /// <field name="context" type="CanvasRenderingContext2D">2D画布渲染上下文</field>
+        
         this.context = this.canvas.getContext("2d");
 
         // 是否开始变换

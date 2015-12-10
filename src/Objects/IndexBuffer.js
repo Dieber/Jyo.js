@@ -2,6 +2,16 @@
     "use strict";
 
     Jyo.IndexBuffer = function (indexCount, buffer, indexElementSize) {
+        /// <summary>索引缓冲区</summary>
+        /// <param name="indexCount" type="Number">索引数量</param>
+        /// <param name="buffer" type="ArrayBuffer">缓冲区数组</param>
+        /// <param name="indexElementSize" type="Number">索引元素大小</param>
+
+        /// <field name="bufferUsage" type="String">缓冲区用处</field>
+        /// <field name="indexCount" type="Number">索引数量</field>
+        /// <field name="indexElementSize" type="Number">索引元素数量</field>
+        /// <field name="buffer" type="WebGLBuffer">GL缓冲区对象</field>
+
         this.bufferUsage = "None";
         this.indexCount = indexCount;
         this.indexElementSize = indexElementSize;
@@ -27,6 +37,11 @@
     }
 
     Jyo.IndexBuffer.read = function (renderer, dataView, offset) {
+        /// <summary>读取索引缓冲</summary>
+        /// <param name="renderer" type="Jyo.Renderer">渲染器对象</param>
+        /// <param name="dataView" type="DataView">数据视图对象</param>
+        /// <param name="offset" type="Number">数据偏移量</param>
+
         var is16Bit = !!dataView.getUint8(offset++);
         var dataSize = dataView.getUint32(offset);
         offset += 4;

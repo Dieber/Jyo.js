@@ -10,7 +10,8 @@
 
     Jyo.Status.prototype = new Jyo.Object({
         suppressDraw: function () {
-            // 没写完
+            /// <summary>跳过一次Draw，直到下次Update</summary>
+
             _isSuppressDraw = true;
         }
     });

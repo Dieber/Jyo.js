@@ -199,6 +199,9 @@
                   }
               }),
         copyAbsoluteBoneTransformsTo: function (destinationBoneTransforms) {
+            /// <summary>拷贝相对骨骼变换到数组</summary>
+            /// <param name="destinationBoneTransforms" type="Array">数组</param>
+
             var count = this.bones.length;
             for (var index1 = 0; index1 < count; ++index1) {
                 var modelBone = (this.bones)[index1];
@@ -213,12 +216,18 @@
             }
         },
         copyBoneTransformsFrom: function (sourceBoneTransforms) {
+            /// <summary>从数组拷入骨骼变换数据</summary>
+            /// <param name="sourceBoneTransforms" type="Array">源骨骼变换数组</param>
+
             var count = this.bones.length;
             for (var i = 0; i < count; i++) {
                 this.bones[i].transform = sourceBoneTransforms[i];
             }
         },
         copyBoneTransformsTo: function (destinationBoneTransforms) {
+            /// <summary>拷贝骨骼变换数据到数组</summary>
+            /// <param name="destinationBoneTransforms" type="Array">数组</param>
+
             var count = this.bones.length;
             for (var i = 0; i < count; i++) {
                 destinationBoneTransforms[i] = this.bones[i].transform;

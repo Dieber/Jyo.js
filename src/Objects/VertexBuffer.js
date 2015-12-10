@@ -2,6 +2,17 @@
     "use strict";
 
     Jyo.VertexBuffer = function (declaration, vertexCount, buffer, arr) {
+        /// <summary>顶点缓冲区</summary>
+        /// <param name="declaration" type="Object"></param>
+        /// <param name="vertexCount" type="Number">顶点数量</param>
+        /// <param name="buffer" type="WebGLBuffer">GL缓冲区对象</param>
+        /// <param name="arr" type="Array">原始数据</param>
+
+        /// <field name="declaration" type="Object">声明对象</field>
+        /// <field name="vertexCount" type="Number">顶点数量</field>
+        /// <field name="bufferUsage" type="String">缓冲区用处</field>
+        /// <field name="buffer" type="WebGLBuffer">GL缓冲区对象</field>
+
         this.declaration = declaration;
         this.vertexCount = vertexCount;
         this.bufferUsage = "None";
@@ -17,16 +28,19 @@
     Jyo.VertexBuffer.prototype = {
         getData: Jyo.overload().
                  add("Array", function (data) {
+
                      // 元素所占用的字节数
                      var elementSizeInByte = 8;
                      this.getData(0, data, 0, data.length, elementSizeInByte);
                  }).
                  add("Array, Number, Number", function (data, startIndex, elementCount) {
+
                      // 元素所占用的字节数
                      var elementSizeInByte = 8;
                      this.getData(0, data, startIndex, elementCount, elementSizeInByte);
                  }).
                  add("Number, Array, Number, Number, Number", function (offsetInBytes, data, startIndex, elementCount, vertexStride) {
+                     
                      // 元素所占用的字节数
                      var elementSizeInByte = 8;
 
@@ -65,6 +79,11 @@
     }
 
     Jyo.VertexBuffer.read = function (renderer, dataView, offset) {
+        /// <summary>读取顶点缓冲区</summary>
+        /// <param name="renderer" type="Jyo.Renderer">渲染器对象</param>
+        /// <param name="dataView" type="DataView">数据视图对象</param>
+        /// <param name="offset" type="Number">数据偏移量</param>
+
         var ctx = renderer.context;
 
         var vertexDeclaration = {};

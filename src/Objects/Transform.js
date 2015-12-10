@@ -4,7 +4,9 @@
     var STACK_DEPTH_LIMIT = 16;
 
     function matrixMultiply(m1, m2) {
-        /// <summary>矩阵相乘</summary>
+        /// <summary>特制矩阵相乘</summary>
+        /// <param name="m1" type="Array">第一个矩阵数组</param>
+        /// <param name="m2" type="Array">第二个矩阵数组，结果将影响此数组</param>
 
         var m10 = m1[0], m11 = m1[1], m12 = m1[2], m13 = m1[3], m14 = m1[4], m15 = m1[5], m16 = m1[6], m17 = m1[7], m18 = m1[8],
             m20 = m2[0], m21 = m2[1], m22 = m2[2], m23 = m2[3], m24 = m2[4], m25 = m2[5], m26 = m2[6], m27 = m2[7], m28 = m2[8];
@@ -30,6 +32,14 @@
         /// <param  name="matrix" type="Jyo.Matrix">矩阵对象</param>
         /// <returns type="Jyo.Transform" />
         /// </signature>
+
+        /// <field name="translateMatrix" type="Array">平移矩阵数组</field>
+        /// <field name="scaleMatrix" type="Array">缩放矩阵数组</field>
+        /// <field name="rotateMatrix" type="Array">旋转矩阵数组</field>
+        /// <field name="matrixPool" type="Array">矩阵数组池</field>
+        /// <field name="matrixCache" type="Array">矩阵缓存数组</field>
+        /// <field name="currentStack" type="Number">当前使用索引</field>
+        /// <field name="valid" type="Number">有效值</field>
 
         this.clearStack();
         constructor.apply(this, arguments);
@@ -99,6 +109,8 @@
         },
         translate: function (x, y) {
             /// <summary>平移</summary>
+            /// <param name="x" type="Number">X坐标</param>
+            /// <param name="y" type="Number">Y坐标</param>
 
             this.translateMatrix[6] = x;
             this.translateMatrix[7] = y;
@@ -107,6 +119,8 @@
         },
         scale: function (x, y) {
             /// <summary>缩放</summary>
+            /// <param name="x" type="Number">横向缩放值</param>
+            /// <param name="y" type="Number">纵向缩放值</param>
 
             this.scaleMatrix[0] = x;
             this.scaleMatrix[4] = y;
@@ -115,6 +129,7 @@
         },
         rotate: function (ang) {
             /// <summary>旋转</summary>
+            /// <param name="ang" type="Number">旋转值</param>
 
             var sAng, cAng;
 

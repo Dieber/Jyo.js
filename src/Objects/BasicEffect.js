@@ -88,6 +88,14 @@
     var program = null;
 
     Jyo.BasicEffect.read = function (xnb, model, content, renderer, dataView, offset) {
+        /// <summary>读取基础效果</summary>
+        /// <param name="xnb" type="Jyo.Xnb">Xnb对象</param>
+        /// <param name="model" type="Jyo.Model">模型对象</param>
+        /// <param name="content" type="Jyo.ContentManager">内容管理器</param>
+        /// <param name="renderer" type="Jyo.Renderer">渲染器对象</param>
+        /// <param name="dataView" type="DataView">数据视图</param>
+        /// <param name="offset" type="Number">数据偏移量</param>
+
         var basicEffect = new Jyo.BasicEffect(renderer);
 
         var refTextures = model._refTextures = model._refTextures || [];

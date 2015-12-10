@@ -26,6 +26,7 @@
 
     Jyo.Renderer.WebGL = function () {
         /// <summary>WebGL渲染器</summary>
+        /// <param name="context" type="WebGLRenderingContext or WebGL2RenderingContext">WebGL上下文对象或WebGL2上下文对象</param>
 
         var _this = this;
         var ctx;
@@ -177,6 +178,7 @@
         /// <summary>初始化着色器</summary>
         /// <param name="transformStackDepth" type="Number">变换堆栈深度</param>
         /// <param name="sm" type="Number">着色器掩码</param>
+        /// <returns type="WebGLProgram" />
 
         var ctx = this.context;
 
@@ -356,6 +358,8 @@
     }
 
     function closePath() {
+        /// <summary>关闭路径</summary>
+
         if (subPaths.length) {
             // 标记最后一个子路径的关闭
             var prevPath = subPaths[subPaths.length - 1];

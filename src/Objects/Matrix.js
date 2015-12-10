@@ -27,6 +27,31 @@
         /// <returns type="Jyo.Matrix" />
         /// </signature>
 
+        /// <field name="m11" type="Number">矩阵中的一行第一列的值</field>
+        /// <field name="m12" type="Number">矩阵中的一行第二列的值</field>
+        /// <field name="m13" type="Number">矩阵中的一行第三列的值</field>
+        /// <field name="m14" type="Number">矩阵中的一行第四列的值</field>
+        /// <field name="m21" type="Number">矩阵中的二行第一列的值</field>
+        /// <field name="m22" type="Number">矩阵中的二行第二列的值</field>
+        /// <field name="m23" type="Number">矩阵中的二行第三列的值</field>
+        /// <field name="m24" type="Number">矩阵中的二行第四列的值</field>
+        /// <field name="m31" type="Number">矩阵中的三行第一列的值</field>
+        /// <field name="m32" type="Number">矩阵中的三行第二列的值</field>
+        /// <field name="m33" type="Number">矩阵中的三行第三列的值</field>
+        /// <field name="m34" type="Number">矩阵中的三行第四列的值</field>
+        /// <field name="m41" type="Number">矩阵中的四行第一列的值</field>
+        /// <field name="m42" type="Number">矩阵中的四行第二列的值</field>
+        /// <field name="m43" type="Number">矩阵中的四行第三列的值</field>
+        /// <field name="m44" type="Number">矩阵中的四行第四列的值</field>
+        /// <field name="backward" type="Jyo.Vector3">后面</field>
+        /// <field name="down" type="Jyo.Vector3">下面</field>
+        /// <field name="forward" type="Jyo.Vector3">前面</field>
+        /// <field name="left" type="Jyo.Vector3">左面</field>
+        /// <field name="right" type="Jyo.Vector3">右面</field>
+        /// <field name="up" type="Jyo.Vector3">上面</field>
+        /// <field name="translation" type="Jyo.Vector3">变换</field>
+        /// <field name="scale" type="Jyo.Vector3">缩放</field>
+
         var _this = this;
 
         this.length = 16;
@@ -335,7 +360,6 @@
                           }
                       });
 
-    // 矩阵相加
     Jyo.Matrix.add = Jyo.overload().
                      add("Jyo.Matrix, Jyo.Matrix", function (matrix1, matrix2) {
                          /// <summary>矩阵相加</summary>
@@ -359,13 +383,12 @@
                          }
                      });
 
-    // 矩阵相减
     Jyo.Matrix.subtract = Jyo.overload().
                           add("Jyo.Matrix, Jyo.Matrix", function (matrix1, matrix2) {
                               /// <summary>矩阵相减</summary>
                               /// <param name="matrix1" type="Jyo.Matrix">源矩阵</param>
                               /// <param name="matrix2" type="Jyo.Matrix">源矩阵</param>
-                              /// <returns type="Jyo.Matrix"></returns>
+                              /// <returns type="Jyo.Matrix" />
 
                               for (var i = 0; i < this.length; i++) {
                                   matrix1[i] -= matrix2[i];
@@ -383,13 +406,12 @@
                               }
                           });
 
-    // 矩阵相乘
     Jyo.Matrix.multiply = Jyo.overload().
                           add("Jyo.Matrix, Jyo.Matrix", function (matrix1, matrix2) {
                               /// <summary>矩阵相乘</summary>
                               /// <param name="matrix1" type="Jyo.Matrix">源矩阵</param>
                               /// <param name="matrix2" type="Jyo.Matrix">源矩阵</param>
-                              /// <returns type="Jyo.Matrix"></returns>
+                              /// <returns type="Jyo.Matrix" />
 
                               var m11 = (((matrix1[0] * matrix2[0]) + (matrix1[1] * matrix2[4])) + (matrix1[2] * matrix2[8])) + (matrix1[3] * matrix2[12]);
                               var m12 = (((matrix1[0] * matrix2[1]) + (matrix1[1] * matrix2[5])) + (matrix1[2] * matrix2[9])) + (matrix1[3] * matrix2[13]);
@@ -426,7 +448,7 @@
                               return matrix1;
                           }).
                           add("Jyo.Matrix, Jyo.Matrix, Jyo.Matrix", function (matrix1, matrix2, result) {
-                              /// <summary>矩阵相加</summary>
+                              /// <summary>矩阵相乘</summary>
                               /// <param name="matrix1" type="Jyo.Matrix">源矩阵</param>
                               /// <param name="matrix2" type="Jyo.Matrix">源矩阵</param>
                               /// <param name="result" type="Jyo.Matrix">结果矩阵</param>
@@ -468,7 +490,7 @@
                               /// <summary>由标量值乘以一个矩阵</summary>
                               /// <param name="matrix1" type="Number">源矩阵</param>
                               /// <param name="scaleFactor" type="Number">标量值</param>
-                              /// <returns type="Jyo.Matrix"></returns>
+                              /// <returns type="Jyo.Matrix" />
 
                               for (var i = 0; i < this.length; i++) {
                                   matrix1[i] *= scaleFactor;
@@ -486,13 +508,12 @@
                               }
                           });
 
-    // 矩阵相除
     Jyo.Matrix.divide = Jyo.overload().
                         add("Jyo.Matrix, Jyo.Matrix", function (matrix1, matrix2) {
                             /// <summary>矩阵相除</summary>
                             /// <param name="matrix1" type="Jyo.Matrix">源矩阵</param>
                             /// <param name="matrix2" type="Jyo.Matrix">源矩阵</param>
-                            /// <returns type="Jyo.Matrix"></returns>
+                            /// <returns type="Jyo.Matrix" />
 
                             for (var i = 0; i < this.length; i++) {
                                 matrix1[i] /= matrix2[i];
@@ -500,7 +521,7 @@
                             return matrix1;
                         }).
                         add("Jyo.Matrix, Jyo.Matrix, Jyo.Matrix", function (matrix1, matrix2, result) {
-                            /// <summary>矩阵相加</summary>
+                            /// <summary>矩阵相除</summary>
                             /// <param name="matrix1" type="Jyo.Matrix">源矩阵</param>
                             /// <param name="matrix2" type="Jyo.Matrix">源矩阵</param>
                             /// <param name="result" type="Jyo.Matrix">结果矩阵</param>
@@ -513,7 +534,7 @@
                             /// <summary>由标量值为被除数计算一个矩阵</summary>
                             /// <param name="matrix1" type="Number">源矩阵</param>
                             /// <param name="divider" type="Number">标量值</param>
-                            /// <returns type="Jyo.Matrix"></returns>
+                            /// <returns type="Jyo.Matrix" />
 
                             var num = 1 / divider;
                             for (var i = 0; i < this.length; i++) {
@@ -533,11 +554,11 @@
                             }
                         });
 
-    // 矩阵转置
     Jyo.Matrix.transpose = Jyo.overload().
                            add("Jyo.Matrix", function (matrix) {
                                /// <summary>转置矩阵的行和列</summary>
                                /// <param name="matrix" type="Jyo.Matrix">源矩阵</param>
+                               /// <returns type="Jyo.Matrix" />
 
                                var arr = [this[0], this[4], this[8], this[12],
                                           this[1], this[5], this[9], this[13],
@@ -550,6 +571,10 @@
                                return matrix;
                            }).
                            add("Jyo.Matrix, Jyo.Matrix", function (martix, result) {
+                               /// <summary>转置矩阵的行和列</summary>
+                               /// <param name="matrix" type="Jyo.Matrix">源矩阵</param>
+                               /// <param name="result" type="Jyo.Matrix">结果矩阵</param>
+
                                var arr = [this[0], this[4], this[8], this[12],
                                           this[1], this[5], this[9], this[13],
                                           this[2], this[6], this[10], this[14],
@@ -597,7 +622,6 @@
                              result[15] = (i * t - j * r + k * q) * ivd;
                          });
 
-    // 透视投影矩阵
     Jyo.Matrix.createPerspectiveFieldOfView = Jyo.overload().
                                               add("Number, Number, Number, Number", function (fovy, aspect, near, far) {
                                                   /// <summary>创建透视投影矩阵</summary>
@@ -616,7 +640,6 @@
                                                                         0, 0, (2 * far * near) * nf, 0);
                                               });
 
-    // 正交投影矩阵
     Jyo.Matrix.createOrthographicOffCenter = Jyo.overload().
                                              add("Number, Number, Number, Number, Number, Number", function (left, right, bottom, top, near, far) {
                                                  /// <summary>创建正交投影矩阵</summary>

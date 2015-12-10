@@ -2,6 +2,10 @@
     "use strict";
 
     function ThreadError(message, e) {
+        /// <summary>线程错误</summary>
+        /// <param name="message" type="String">错误信息</param>
+        /// <param name="e" type="Error">错误对象</param>
+
         this.name = 'ThreadError';
         this.message = message || (e && e.message) || 'ThreadError';
         if (!!e) this.message = "lineNo:" + e.lineno + "    colNo:" + e.colno + "    msg:" + this.message;
@@ -87,6 +91,7 @@
         },
         send: function (obj) {
             /// <summary>发送数据给线程</summary>
+            /// <param name="obj" type="Object">要发送的数据</param>
 
             if (!this._worker) {
                 throw "Thread not activated.";
