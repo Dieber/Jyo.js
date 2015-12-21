@@ -70,6 +70,27 @@
         };
     }
 
+    // 兼容旧的Blob构造器
+    window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MSBlobBuilder;
+
+    try {
+        new Blob();
+    } catch (e) {
+        // 不支持Blob新构造器时使用旧的构造器
+
+        window.Blob = function (parts, properties) {
+            /// <summary>Blob对象构造器</summary>
+            /// <param name="parts" type="Array">一个数组,包含了将要添加到Blob对象中的数据.数组元素可以是任意多个的ArrayBuffer,ArrayBufferView (typed array), Blob,或者 DOMString对象</param>
+            /// <param name="properties" type="Object">一个对象,设置Blob对象的一些属性</param>
+
+            var oBuilder = new BlobBuilder();
+            for (var i = 0; i < parts.length; i++) {
+                oBuilder.append(parts[i]);
+            }
+            return oBuilder.getBlob(properties.type);
+        };
+    }
+
     if (!HTMLCanvasElement.prototype.toBlob) {
         // 让浏览器兼容Canvas的toBlob函数
         Object.defineProperty(HTMLCanvasElement.prototype, 'toBlob', {

@@ -242,7 +242,7 @@
             return resize;
         }();
 
-        window.addEventListener("load", this._resizeFun, false);
+        window.addEventListener("load", _this._resizeFun, false);
         window.addEventListener("resize", this._resizeFun, false);
     }
 

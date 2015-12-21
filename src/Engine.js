@@ -3,7 +3,7 @@
 
     Jyo.ready = function (callback) {
         if (document.body) return callback(), void 0;
-        document.addEventListener("DOMContentLoaded", callback);
+        document.addEventListener("DOMContentLoaded", callback, false);
     };
 
     Jyo.importScript = function (file, callback, n) {

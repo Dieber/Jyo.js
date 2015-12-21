@@ -137,19 +137,32 @@
     };
 
     Array.prototype.insert = function (index, value) {
+        /// <signature>
         /// <summary>插入项</summary>
         /// <param name="index" type="Number">索引</param>
         /// <param name="value" type="Object">元素</param>
         /// <returns type="Array" />
+        /// </signature>
+        /// <signature>
+        /// <summary>插入数组</summary>
+        /// <param name="index" type="Number">索引</param>
+        /// <param name="value" type="Array">要插入的数组</param>
+        /// <returns type="Array" />
+        /// </signature>
 
-        if (index > this.length) index = this.length;
-        if (index < -this.length) index = 0;
-        if (index < 0) index = this.length + index;
-        for (var i = this.length; i > index; i--) {
-            this[i] = this[i - 1];
+        if (value instanceof Array) {
+            Array.prototype.splice.apply(this, [index, 0].concat(value));
+            return this;
+        } else {
+            if (index > this.length) index = this.length;
+            if (index < -this.length) index = 0;
+            if (index < 0) index = this.length + index;
+            for (var i = this.length; i > index; i--) {
+                this[i] = this[i - 1];
+            }
+            this[index] = value;
+            return this;
         }
-        this[index] = value;
-        return this;
     };
 
     Array.prototype.remove = function (index) {
