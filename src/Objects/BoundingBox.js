@@ -5,6 +5,7 @@
         /// <summary>包围盒构造函数</summary>
         /// <returns type="Jyo.BoundingBox" />
 
+        Jyo.Object.call(this);
         constructor.apply(this, arguments);
     };
 
@@ -112,7 +113,10 @@
                                        result.max.z = Math.max(original.max.z, additional.max.z);
                                    });
 
-    Jyo.BoundingBox.prototype = new Jyo.Object({
+    Jyo.BoundingBox.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.BoundingBox.prototype.constructor = Jyo.BoundingBox;
+    
+    var boundingBoxFns = {
         getCorners: Jyo.overload().
                     add(null, function () {
                         /// <summary>取得拐角数组</summary>
@@ -216,6 +220,10 @@
                     add("Jyo.Ray", function (ray) {
                         return ray.intersects(this);
                     })
-    });
+    };
+    
+    for (var i in boundingBoxFns) {
+        Jyo.BoundingBox.prototype[i] = boundingBoxFns[i];
+    }
 
 })(window, document, Jyo);

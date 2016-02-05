@@ -13,6 +13,8 @@
         /// <field name="isFixedTimeStep" type="Boolean">是否使用固定时间步长</field>
         /// <field name="targetElapsedTime" type="Number">当isFixedTimeStep为true时Update调用间的目标时间</field>
 
+        Jyo.Object.call(this);
+
         var _this = this;
         Object.defineProperty(this, "isEnable", {
             get: function () { return isEnable; },
@@ -98,7 +100,10 @@
         this._fpsNum++;
     }
 
-    Jyo.Application.prototype = new Jyo.Object({
+    Jyo.Application.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Application.prototype.constructor = Jyo.Application; 
+    
+    var applicationFns = {
         run: function () {
             /// <summary>启动应用程序</summary>
 
@@ -176,7 +181,11 @@
             this._currentStatus.isEnable = true;
             this._currentStatus.fireEvent("load");
         }
-    });
+    };
+    
+    for (var i in applicationFns) {
+        Jyo.Application.prototype[i] = applicationFns[i];
+    }
 
     Jyo.Application = new Jyo.Application();
 

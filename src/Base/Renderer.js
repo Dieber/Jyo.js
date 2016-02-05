@@ -41,6 +41,8 @@
         /// <param name="assign" type="String">指定使用的渲染器标识名</param>
         /// </signature>
 
+        Jyo.Object.call(this);
+
         this.x = 0,
         this.y = 0,
         this.minDepth = 0,
@@ -86,6 +88,38 @@
                                       _this.canvas.width = size.width,
                                       _this.canvas.height = size.height;
                                   });
+                                  break;
+                              }
+                          }
+                      }).
+                      add("HTMLCanvasElement", function (canvas) {
+
+                          var rendererList = [Jyo.Renderer.WebGL, Jyo.Renderer.Canvas];
+                          this.container = null;
+                          this.canvas = canvas;
+                          for (var i = 0; i < rendererList.length; i++) {
+                              if (rendererList[i].isSupport !== undefined && rendererList[i].isSupport()) {
+                                  this.assign = rendererList[i].assign;
+                                  rendererList[i].apply(this);
+                                  break;
+                              }
+                          }
+                      }).
+                      add("HTMLCanvasElement, String", function (canvas, assign) {
+
+                          var _this = this,
+                                r = Jyo.Renderer;
+
+                          this.container = null;
+                          this.canvas = canvas;
+                          this.assign = assign;
+
+                          for (var i in r) {
+                              if (!r.isPrototypeOf(i) && r[i].assign == assign) {
+                                  for (var n in r[i].prototype) {
+                                      this[n] = r[i].prototype[n];
+                                  }
+                                  r[i].apply(this);
                                   break;
                               }
                           }
@@ -398,8 +432,11 @@
 
         if (typeof this._scaleFun == "function") this._scaleFun(scaling);
     }
+    
+    Jyo.Renderer.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Renderer.prototype.constructor = Jyo.Renderer;  
 
-    Jyo.Renderer.prototype = new Jyo.Object({
+    var rendererFns = {
         applyChange: Jyo.overload().
                      add("String, any", function (key, value) {
                          /// <summary>应用设置</summary>
@@ -666,6 +703,10 @@
                        }
                        return vector;
                    })
-    });
+    };
+    
+    for (var i in rendererFns) {
+        Jyo.Renderer.prototype[i] = rendererFns[i];
+    }
 
 })(window, document, Jyo);

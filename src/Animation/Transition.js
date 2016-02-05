@@ -41,7 +41,10 @@
         this.transitionAlphaArray = null;
     };
 
-    Jyo.Transition.prototype = new Jyo.Object({
+    Jyo.Transition.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Transition.prototype.constructor = Jyo.Transition;  
+    
+    var transitionFns={
         begin: function (img, time, delay) {
             /// <summary>开始转场动画</summary>
             /// <param name="img" type="Jyo.Xnb">图像Xnb对象</param>
@@ -139,6 +142,10 @@
                 this.fireEvent("end");
             }
         }
-    });
+    };
+    
+    for (var i in transitionFns) {
+        Jyo.Transition.prototype[i] = transitionFns[i];
+    }
 
 })(window, document, Jyo);

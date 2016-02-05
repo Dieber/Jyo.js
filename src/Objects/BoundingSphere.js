@@ -5,6 +5,7 @@
         /// <summary>包围球构造函数</summary>
         /// <returns type="Jyo.BoundingSphere" />
 
+        Jyo.Object.call(this);
         constructor.apply(this, arguments);
     };
 
@@ -152,7 +153,10 @@
                                               return new Jyo.BoundingSphere(center, radius);
                                           });
 
-    Jyo.BoundingSphere.prototype = new Jyo.Object({
+    Jyo.BoundingSphere.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.BoundingSphere.prototype.constructor = Jyo.BoundingSphere; 
+    
+    var boundingSphereFns = {
         intersects: Jyo.overload().
                     add("Jyo.BoundingBox", function (box) {
                         /// <summary>相交检测</summary>
@@ -208,6 +212,10 @@
                             Jyo.Vector3.transform(this.center, transform, transformedSphere.center);
                             return transformedSphere;
                         })
-    });
+    };
+    
+    for (var i in boundingSphereFns) {
+        Jyo.BoundingSphere.prototype[i] = boundingSphereFns[i];
+    }
 
 })(window, document, Jyo);

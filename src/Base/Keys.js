@@ -6,6 +6,8 @@
         /// <summary>按键管理器构造函数</summary>
         /// </signature>
 
+        Jyo.Object.call(this);
+
         var k = Jyo.Keys;
 
         this.list = [];
@@ -186,8 +188,11 @@
             get: function () { return keys[i]; }
         });
     }
+    
+    Jyo.Keys.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Keys.prototype.constructor = Jyo.Keys;  
 
-    Jyo.Keys.prototype = new Jyo.Object({
+    var keysFns = {
         isKeyDown: function (keyCode) {
             /// <summary>是否按下了某个键</summary>
             /// <param name="keyCode" type="Number">按键码</param>
@@ -199,6 +204,10 @@
             }
             return false;
         }
-    });
+    };
+    
+    for (var i in keysFns) {
+        Jyo.Keys.prototype[i] = keysFns[i];
+    }
 
 })(window, document, Jyo);

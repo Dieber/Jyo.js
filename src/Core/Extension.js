@@ -26,6 +26,18 @@
         };
     }();
 
+    Number.prototype.precisionCorrect = function (n) {
+        /// <summary>精度修正函数</summary>
+        /// <param name="n" type="Number">要保留的精度</param>
+        /// <returns type="Number" />
+
+        var dd = 1;
+        for (i = 0; i < n; i++) {
+            dd *= 10;
+        }
+        return Math.round(this * dd) / dd;
+    };
+
     Number.prototype.prefixInteger = function (length) {
         /// <summary>用0补全位数</summary>
         /// <param name="length" type="Number">要补全的位数</param>
@@ -260,6 +272,16 @@
     // PI的一半
     Math.HALF_PI = Math.PI / 2.0;
 
+    Math.randSafe = function (left, right) {
+        /// <summary>随机安全上限</summary>
+        /// <param name="left" type="Number">左安全线</param>
+        /// <param name="right" type="Number">右安全线</param>
+        /// <returns type="Number" />
+
+        if (left >= right) return left;
+        else return ((Math.random() * 32767) | 0) % (right - left) + left;
+    };
+
     Math.clamp = function (value, min, max) {
         /// <summary>范围限制</summary>
         /// <param name="value" type="Number">要收紧的数</param>
@@ -306,7 +328,7 @@
     };
 
     Math.hermite = function (value1, tangent1, value2, tangent2, amount) {
-        /// <summary>艾米插值</summary>
+        /// <summary>埃尔米特插值</summary>
         /// <param name="value1" type="Number">第一个值</param>
         /// <param name="tangent1" type="Number">第一个正切</param>
         /// <param name="value2" type="Number">第二个值</param>

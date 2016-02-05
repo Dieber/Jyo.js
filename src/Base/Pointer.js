@@ -6,6 +6,8 @@
         /// <summary>指针管理器构造函数</summary>
         /// <param name="renderer" type="Jyo.Renderer">渲染器</param>
         /// </signature>
+        
+        Jyo.Object.call(this);
 
         var p = Jyo.Pointer;
 
@@ -35,6 +37,7 @@
 
     Jyo.Pointer.processors = [];
 
-    Jyo.Pointer.prototype = new Jyo.Object();
+    Jyo.Pointer.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Pointer.prototype.constructor = Jyo.Pointer;  
 
 })(window, document, Jyo);

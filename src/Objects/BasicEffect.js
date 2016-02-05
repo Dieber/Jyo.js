@@ -160,7 +160,8 @@
         };
     };
 
-    Jyo.BasicEffect.prototype = Jyo.Effect.prototype;
+    Jyo.BasicEffect.prototype = Object.create(Jyo.Effect.prototype);
+    Jyo.BasicEffect.prototype.constructor = Jyo.BasicEffect; 
 
     Jyo.BasicEffect.prototype.initProgram = function (ctx) {
         /// <summary>初始化着色程序</summary>

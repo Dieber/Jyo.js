@@ -28,6 +28,8 @@
         /// <summary>WebGL渲染器</summary>
         /// <param name="context" type="WebGLRenderingContext or WebGL2RenderingContext">WebGL上下文对象或WebGL2上下文对象</param>
 
+        Jyo.Object.call(this);
+
         var _this = this;
         var ctx;
 
@@ -474,7 +476,10 @@
         }
     }
 
-    Jyo.Renderer.WebGL.prototype = new Jyo.Object({
+    Jyo.Renderer.WebGL.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Renderer.WebGL.prototype.constructor = Jyo.Renderer.WebGL;
+    
+    var webglFns = {
         _bindTexture: function (image, width, height, texture, repetitionStyle, callback) {
             /// <summary>绑定材质</summary>
             /// <param name="image" type="HTMLElement">图像对象</param>
@@ -1445,6 +1450,10 @@
                              fill.call(this, color);
                          });
                      })
-    });
+    };
+    
+    for (var i in webglFns) {
+        Jyo.Renderer.WebGL.prototype[i] = webglFns[i];
+    }
 
 })(window, document, Jyo);

@@ -3,7 +3,7 @@
 
     Jyo.Object = function (obj) {
         /// <summary>引擎自定义对象基类</summary>
-
+        
         this._events = {};
 
         for (var i in obj) this[i] = obj[i];
@@ -15,7 +15,7 @@
             /// <param name="type" type="String">事件名称</param>
             /// <param name="listener" type="Function">触发的函数</param>
             /// <param name="capture" type="Boolean">是否在捕获阶段触发</param>
-
+            
             if (typeof type != "string" || typeof listener != "function") return this;
             var evn = this._events[type];
             if (evn === undefined) evn = (this._events[type] = []);
@@ -72,6 +72,8 @@
             /// <summary>检测是否相等</summary>
             /// <param name="obj" type="Jyo.Object">要进行比对的对象</param>
             /// <returns type="Boolean" />
+
+            if (this._canNew) Jyo.Object.call(this);
 
             return obj === this;
         }

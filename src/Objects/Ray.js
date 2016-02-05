@@ -7,6 +7,7 @@
         /// <field name="direction" type="Jyo.Vector3">射线方向</field>
         /// <returns type="Jyo.BoundingSphere" />
 
+        Jyo.Object.call(this);
         constructor.apply(this, arguments);
     };
 
@@ -23,7 +24,10 @@
 
     var EPSILON = 1e-6;
 
-    Jyo.Ray.prototype = new Object({
+    Jyo.Ray.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Ray.prototype.constructor = Jyo.Ray; 
+    
+    var rayFns = {
         intersects: Jyo.overload().
                     add("Jyo.BoundingBox", function (box) {
                         /// <summary>判断是否相交</summary>
@@ -135,6 +139,10 @@
 
                         return (dist < 0) ? null : distanceAlongRay - Math.sqrt(dist);
                     })
-    });
+    };
+
+    for (var i in rayFns) {
+        Jyo.Ray.prototype[i] = rayFns[i];
+    }
 
 })(window, document, Jyo);

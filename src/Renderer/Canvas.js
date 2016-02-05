@@ -5,6 +5,8 @@
         /// <summary>Canvas渲染器</summary>
         /// <field name="context" type="CanvasRenderingContext2D">2D画布渲染上下文</field>
         
+        Jyo.Object.call(this);
+        
         this.context = this.canvas.getContext("2d");
 
         // 是否开始变换
@@ -32,7 +34,10 @@
     var tempCanvas = document.createElement("canvas");
     var tempContext = tempCanvas.getContext("2d");
 
-    Jyo.Renderer.Canvas.prototype = new Jyo.Object({
+    Jyo.Renderer.Canvas.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Renderer.Canvas.prototype.constructor = Jyo.Renderer.Canvas;
+    
+    var canvasFns = {
         clear: function () {
             /// <summary>清空画布</summary>
 
@@ -851,6 +856,10 @@
                              ctx.fill();
                          });
                      })
-    });
+    };
+    
+    for (var i in canvasFns) {
+        Jyo.Renderer.Canvas.prototype[i] = canvasFns[i];
+    }
 
 })(window, document, Jyo);

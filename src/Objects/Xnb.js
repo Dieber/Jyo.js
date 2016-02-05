@@ -15,6 +15,7 @@
         /// <field name="uncompressedFileSize" type="Number">未压缩的文件大小</field>
         /// <field name="content" type="Object">文件内容对象</field>
 
+        Jyo.Object.call(this);
         this.filename = "";
         this.type = "unknow";
         this.targetPlatform = "Windows";
@@ -25,14 +26,19 @@
         this.typeReaders = [];
         this.contentCount = 1;
         this.uncompressedFileSize = 0;
-
-        Jyo.Object.call(this);
     };
 
-    Jyo.Xnb.prototype = new Jyo.Object({
+    Jyo.Xnb.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Xnb.prototype.constructor = Jyo.Xnb;
+    
+    var xnbFns = {
         destroy: function () {
             for (var i in this) delete this[i];
         }
-    });
+    };
+    
+    for (var i in xnbFns) {
+        Jyo.Xnb.prototype[i] = xnbFns[i];
+    }
 
 })(window, document, Jyo);

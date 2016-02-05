@@ -17,6 +17,8 @@
 
         if (contentManager) return contentManager;
         contentManager = this;
+        
+        Jyo.Object.call(this);
 
         this.rootDirectory = rootDirectory;
         this.renderer = renderer;
@@ -24,11 +26,14 @@
         this.percent = 100;
         this.loadNum = 0;
         this.loadDoneNum = 0;
-
-        Jyo.Object.call(this);
     };
+    
+    
 
-    Jyo.ContentManager.prototype = new Jyo.Object({
+    Jyo.ContentManager.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.ContentManager.prototype.constructor = Jyo.ContentManager;  
+    
+    var contentManagerFns = {
         load: function (filename) {
             /// <summary>加载资源</summary>
             /// <param name="filename" type="String">文件名</param>
@@ -55,7 +60,10 @@
             }
             this.percent = ((this.loadDoneNum / this.loadNum) | 0) * 100;
         }
-    });
-
+    };
+    
+    for (var i in contentManagerFns) {
+        Jyo.ContentManager.prototype[i] = contentManagerFns[i];
+    }
 
 })(window, document, Jyo);

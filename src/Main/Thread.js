@@ -17,9 +17,8 @@
     Jyo.Thread = function () {
         /// <summary>线程对象</summary>
 
-        constructor.apply(this, arguments);
-
         Jyo.Object.call(this);
+        constructor.apply(this, arguments);
     };
 
     var constructor = Jyo.overload().
@@ -65,7 +64,10 @@
                           this._callUrl = window.URL.createObjectURL(workerBlob);
                       });
 
-    Jyo.Thread.prototype = new Jyo.Object({
+    Jyo.Thread.prototype = Object.create(Jyo.Object.prototype);
+    Jyo.Thread.prototype.constructor = Jyo.Thread;  
+    
+    var threadFns = {
         start: function () {
             /// <summary>开启线程</summary>
 
@@ -98,6 +100,10 @@
             }
             this._worker.postMessage(obj);
         }
-    });
+    };
+    
+    for (var i in threadFns) {
+        Jyo.Thread.prototype[i] = threadFns[i];
+    }
 
 })(window, document, Jyo);
