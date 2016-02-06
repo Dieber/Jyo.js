@@ -24,7 +24,7 @@
                 rect.height = e.height;
                 updateSize.apply(c);
             };
-        }(this), false);
+        } (this), false);
 
         Object.defineProperty(this, "rectangle", {
             get: function () { return rect; }
@@ -165,6 +165,8 @@
         updateSize.apply(this);
         control.minContainerWidth = control._minContainerWidth;
         control.minContainerHeight = control._minContainerHeight;
+
+        this.fireEvent("controlschanged", { changedControl: control });
     }
 
     function removeControl(control) {
@@ -184,6 +186,8 @@
                 break;
             }
         }
+        
+        this.fireEvent("controlschanged", { changedControl: control });
     }
 
     Jyo.UI.prototype = Object.create(Jyo.Object.prototype);
