@@ -24,7 +24,7 @@
                 rect.height = e.height;
                 updateSize.apply(c);
             };
-        } (this), false);
+        }(this), false);
 
         Object.defineProperty(this, "rectangle", {
             get: function () { return rect; }
@@ -188,11 +188,7 @@
                 break;
             }
         }
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         this.fireEvent("controlschanged", { changedControl: control });
     }
 
