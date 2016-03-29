@@ -14,16 +14,16 @@
         n = n || 0;
 
         var script = document.createElement("script");
-        script.onreadystatechange = function () {
-            if (!script.readyState || 'loaded' === script.readyState || 'complete' === script.readyState) {
+        script.onreadystatechange = script.onload = function () {
+            if (!this.readyState || 'loaded' === this.readyState || 'complete' === this.readyState) {
                 // 判断是否需要导入多个脚本
                 if (file instanceof Array && file.length - n > 1) {
                     Jyo.importScript(file, callback, n + 1);
                 } else {
                     callback && callback();
                 }
-                script.onreadystatechange = null;
-                script.parentNode.removeChild(script);
+                this.onreadystatechange = null;
+                this.parentNode.removeChild(this);
             }
         };
         script.src = file instanceof Array ? file[n] : file;
@@ -42,40 +42,30 @@
         /// <param name="progressCallback" type="Function" optional="true">自定义过程处理函数</param>
 
         type = type || "text/plain";
+        var xmlHttp = new XMLHttpRequest();
+        var isText = type.indexOf("text") >= 0;
 
-        var isIE = !("XMLHttpRequest" in window);
-        var xmlHttp = !isIE ? new XMLHttpRequest() : new ActiveXObject("Msxml2.XMLHTTP");
-
-        xmlHttp.onerror = function () {
+        xmlHttp.onerror = function (e) {
+            if (this.status == 0) {
+                return console.error("无法读取跨域或本地文件");
+            }
             throw String.format("File \"{0}\" not found", url);
         };
 
         xmlHttp.onprogress = progressCallback;
 
         xmlHttp.onreadystatechange = function () {
-            if (xmlHttp.readyState === 4) {
-                if (xmlHttp.status == 404) { xmlHttp.onerror(); }
-                if (!!callback) {
-                    if (type.indexOf("text") < 0) {
-                        if (isIE && type.toLowerCase() == "arraybuffer" && "VBArray" in window) {
-                            callback(new VBArray(xmlHttp.responseBody).toArray());
-                        } else {
-                            callback(xmlHttp.response);
-                        }
-                    }
-                    else {
-                        callback(xmlHttp.responseText);
-                    }
-                }
+            if (this.readyState === 4) {
+                if (this.status == 404) { return this.onerror(); }
+                if ((!isText && !this.response) || (isText && !this.responseText)) { return; }
+                (callback instanceof Function) && callback(!isText ? this.response : this.responseText);
             }
         };
 
-        // 文本格式不支持设置responseType
-        if (!isIE && type.indexOf("text") < 0) {
-            xmlHttp.open('GET', url);
+        xmlHttp.open('GET', url, !syne);
+        if (!isText) {
+            // 文本格式不支持设置responseType
             xmlHttp.responseType = type;
-        } else {
-            xmlHttp.open('GET', url, !syne);
         }
 
         xmlHttp.send(null);

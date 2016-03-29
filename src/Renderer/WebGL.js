@@ -95,13 +95,13 @@
         this.maxTextureSize = ctx.getParameter(ctx.MAX_TEXTURE_SIZE);
 
         // 是否开始变换
-        this.isBeginConvert = false;
+        this.isBeginTransform = false;
 
         // 变换参数
         this.convertArrs = {
             rotate: null,
-            scaleX: null,
-            scaleY: null
+            scaleX: 1,
+            scaleY: 1
         };
     };
 
@@ -129,10 +129,6 @@
         /// <param name="vsSource" type="String">顶点着色器代码</param>
         /// <param name="fsSource" type="String">片元着色器代码</param>
         /// <returns type="WebGLProgram" />
-
-        if (!(ctx instanceof WebGLRenderingContext)) {
-            throw "Only WebGL can use GLSL";
-        }
 
         /*
             编译片元着色器
@@ -389,8 +385,7 @@
             subPaths[subPaths.length - 1].verts.push(x, y, 0, 0);
         } else {
             // 如果当前没有任何子路径，则运行moveTo
-
-            this.context.moveTo(x, y);
+            moveTo.call(this, x, y);
         }
     }
 
@@ -478,7 +473,7 @@
 
     Jyo.Renderer.WebGL.prototype = Object.create(Jyo.Object.prototype);
     Jyo.Renderer.WebGL.prototype.constructor = Jyo.Renderer.WebGL;
-    
+
     var webglFns = {
         _bindTexture: function (image, width, height, texture, repetitionStyle, callback) {
             /// <summary>绑定材质</summary>
@@ -563,26 +558,26 @@
             var ctx = this.context;
             ctx.clear(ctx.COLOR_BUFFER_BIT | ctx.DEPTH_BUFFER_BIT);
         },
-        beginConvert: function (rotate, scaleX, scaleY) {
+        beginTransform: function (rotate, scaleX, scaleY) {
             /// <summary>开始变换</summary>
             /// <param name="rotate" type="Number" optional="true">旋转值</param>
             /// <param name="scaleX" type="Number" optional="true">X缩放值</param>
             /// <param name="scaleY" type="Number" optional="true">Y缩放值</param>
 
-            this.isBeginConvert = true;
+            this.isBeginTransform = true;
             this.convertArrs.scaleX = scaleX || 1;
             this.convertArrs.scaleY = scaleY || 1;
             this.convertArrs.rotate = rotate || 0;
         },
-        endConvert: function () {
+        endTransform: function () {
             /// <summary>结束变换</summary>
 
-            this.isBeginConvert = false;
-            this.convertArrs.scaleX = 0;
-            this.convertArrs.scaleY = 0;
+            this.isBeginTransform = false;
+            this.convertArrs.scaleX = 1;
+            this.convertArrs.scaleY = 1;
             this.convertArrs.rotate = 0;
         },
-        useConvert: function (x, y, w, h, callback) {
+        useTransform: function (x, y, w, h, callback, canRun) {
             /// <summary>使用变换绘制</summary>
             /// <param name="x" type="Number">X位置</param>
             /// <param name="y" type="Number">Y位置</param>
@@ -590,24 +585,16 @@
             /// <param name="h" type="Number">高度</param>
             /// <param name="callback" type="Function">回调函数</param>
 
-            var t = this.convertArrs,
-                    ctx = this.context,
-                    transform = this.transform;
+            if (!canRun && this.isBeginTransform) {
+                throw "只有drawImage函数可以使用变换";
+            }
+
+            var ctx = this.context;
 
             var enableDepthTest = ctx.getParameter(ctx.DEPTH_TEST);
             enableDepthTest && ctx.disable(ctx.DEPTH_TEST);
 
-            if (!this.isBeginConvert || (!x && !y && !w && !h)) {
-                callback.call(this);
-            } else {
-                transform.translate(x + w * 0.5, y + h * 0.5);
-                transform.scale(t.scaleX, t.scaleY);
-                t.rotate && transform.rotate(t.rotate);
-                callback.call(this);
-                t.rotate && transform.rotate(-t.rotate);
-                transform.scale(1 / t.scaleX, 1 / t.scaleY);
-                transform.translate(-(x + w * 0.5), -(y + h * 0.5));
-            }
+            callback.call(this);
 
             enableDepthTest && ctx.enable(ctx.DEPTH_TEST);
         },
@@ -664,11 +651,11 @@
                       var shaderProgram = init2DShaders.call(this, transform.currentStack + 2, 0);
                       color = color.toVec4();
 
-                      this.useConvert(x, y, width, height, function () {
+                      this.useTransform(x, y, width, height, function () {
                           ctx.bindBuffer(ctx.ARRAY_BUFFER, this.rectVertexPositionBuffer);
                           ctx.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, ctx.FLOAT, false, 0, 0);
                           transform.pushMatrix();
-                          if (this.isBeginConvert) {
+                          if (this.isBeginTransform) {
                               transform.translate(-0.5 * width, -0.5 * height);
                               transform.scale(width, height);
                           }
@@ -766,11 +753,11 @@
                       color = color.toVec4();
 
                       ctx.lineWidth(lineWidth);
-                      this.useConvert(x, y, width, height, function () {
+                      this.useTransform(x, y, width, height, function () {
                           ctx.bindBuffer(ctx.ARRAY_BUFFER, this.rectVertexPositionBuffer);
                           ctx.vertexAttribPointer(shaderProgram.vertexPositionAttribute, 4, ctx.FLOAT, false, 0, 0);
                           transform.pushMatrix();
-                          if (this.isBeginConvert) {
+                          if (this.isBeginTransform) {
                               width = width - lineWidth,
                               height = height - lineWidth;
                               transform.translate(-0.5 * width, -0.5 * height);
@@ -978,7 +965,7 @@
                        }),
         drawImage: Jyo.overload().
                    add("any, Number, Number", function (element, x, y) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -989,7 +976,7 @@
                        this.drawImage(element, x, y, w, h);
                    }).
                    add("any, Number, Number, Number", function (element, x, y, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1000,14 +987,14 @@
                        this.globalAlpha = 1;
                    }).
                    add("any, Jyo.Rectangle", function (element, rect) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="rect" type="Jyo.Rectangle">矩形对象</param>
 
                        this.drawImage(element, rect.x, rect.y, rect.width, rect.height);
                    }).
                    add("any, Jyo.Rectangle, Number", function (element, rect, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="rect" type="Jyo.Rectangle">矩形对象</param>
                        /// <param name="alpha" type="Number">Alpha值(取值0-1之间)</param>
@@ -1017,7 +1004,7 @@
                        this.globalAlpha = 1;
                    }).
                    add("any, Jyo.Rectangle, Jyo.Rectangle", function (element, rect, crect) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="rect" type="Jyo.Rectangle">矩形对象</param>
                        /// <param name="crect" type="Jyo.Rectangle">剪裁矩形对象</param>
@@ -1025,7 +1012,7 @@
                        this.drawImage(element, rect.x, rect.y, rect.width, rect.height, crect.x, crect.y, crect.width, crect.height);
                    }).
                    add("any, Jyo.Rectangle, Jyo.Rectangle, Number ", function (element, rect, crect, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="rect" type="Jyo.Rectangle">矩形对象</param>
                        /// <param name="crect" type="Jyo.Rectangle">剪裁矩形对象</param>
@@ -1036,7 +1023,7 @@
                        this.globalAlpha = 1;
                    }).
                    add("any, Number, Number, Number, Number", function (element, x, y, width, height) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1049,18 +1036,23 @@
                            else this._bindTexture(element, element.width, element.height, element.glTexture);
                            element = element.glTexture;
                        }
-                       this.useConvert(x, y, width, height, function () {
-                           if (this.isBeginConvert) {
-                               x = -0.5 * width;
-                               y = -0.5 * height;
-                           }
-
+                       this.useTransform(x, y, width, height, function () {
                            var transform = this.transform;
                            var ctx = this.context;
+                           var t = this.convertArrs;
 
                            transform.pushMatrix();
-                           transform.translate(x, y);
-                           transform.scale(width, height);
+
+                           if (this.isBeginTransform) {
+                               transform.translate(x + width * 0.5, y + height * 0.5);
+                               transform.scale(t.scaleX, t.scaleY);
+                               t.rotate && transform.rotate(t.rotate);
+                               transform.translate(-0.5 * width, -0.5 * height);
+                               transform.scale(width, height);
+                           } else {
+                               transform.translate(x, y);
+                               transform.scale(width, height);
+                           }
 
                            var shaderProgram = init2DShaders.call(this, transform.currentStack, shaderMask.texture);
                            ctx.bindBuffer(ctx.ARRAY_BUFFER, this.rectVertexPositionBuffer);
@@ -1076,10 +1068,10 @@
                            ctx.drawArrays(ctx.TRIANGLE_FAN, 0, 4);
 
                            transform.popMatrix();
-                       });
+                       }, !0);
                    }).
                    add("any, Number, Number, Number, Number, Number", function (element, x, y, width, height, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1092,7 +1084,7 @@
                        this.globalAlpha = 1;
                    }).
                    add("any, Number, Number, Number, Number, Jyo.Rectangle", function (element, x, y, width, height, crect) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1103,7 +1095,7 @@
                        this.drawImage(element, x, y, width, height, crect.x, crect.y, crect.width, crect.height);
                    }).
                    add("any, Number, Number, Number, Number, Jyo.Rectangle, Number", function (element, x, y, width, height, crect, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1117,7 +1109,7 @@
                        this.globalAlpha = 1;
                    }).
                    add("any, Jyo.Rectangle, Number, Number, Number, Number", function (element, rect, cx, cy, cwidth, cheight) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="rect" type="Jyo.Rectangle">矩形对象</param>
                        /// <param name="cx" type="Number">在原图坐标上进行剪裁的起始X坐标</param>
@@ -1128,7 +1120,7 @@
                        this.drawImage(element, rect.x, rect.y, rect.width, rect.height, cx, cy, cwidth, cheight);
                    }).
                    add("any, Jyo.Rectangle, Number, Number, Number, Number, Number", function (element, rect, cx, cy, cwidth, cheight, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="rect" type="Jyo.Rectangle">矩形对象</param>
                        /// <param name="cx" type="Number">在原图坐标上进行剪裁的起始X坐标</param>
@@ -1142,7 +1134,7 @@
                        this.globalAlpha = 1;
                    }).
                    add("any, Number, Number, Number, Number, Number, Number, Number, Number", function (element, x, y, width, height, cx, cy, cwidth, cheight) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1159,18 +1151,23 @@
                            else this._bindTexture(element, element.width, element.height, element.glTexture);
                            element = element.glTexture;
                        }
-                       this.useConvert(x, y, width, height, function () {
-                           if (this.isBeginConvert) {
-                               x = -0.5 * width;
-                               y = -0.5 * height;
-                           }
-
+                       this.useTransform(x, y, width, height, function () {
                            var transform = this.transform;
                            var ctx = this.context;
+                           var t = this.convertArrs;
 
                            transform.pushMatrix();
-                           transform.translate(x, y);
-                           transform.scale(width, height);
+
+                           if (this.isBeginTransform) {
+                               transform.translate(x + width * 0.5, y + height * 0.5);
+                               transform.scale(t.scaleX, t.scaleY);
+                               t.rotate && transform.rotate(t.rotate);
+                               transform.translate(-0.5 * width, -0.5 * height);
+                               transform.scale(width, height);
+                           } else {
+                               transform.translate(x, y);
+                               transform.scale(width, height);
+                           }
 
                            var shaderProgram = init2DShaders.call(this, transform.currentStack, shaderMask.texture | shaderMask.crop);
                            ctx.uniform4f(shaderProgram.uCropSource, cx / element.width, cy / element.height, cwidth / element.width, cheight / element.height);
@@ -1187,10 +1184,10 @@
                            ctx.drawArrays(ctx.TRIANGLE_FAN, 0, 4);
 
                            transform.popMatrix();
-                       });
+                       }, !0);
                    }).
                    add("any, Number, Number, Number, Number, Number, Number, Number, Number, Number", function (element, x, y, width, height, cx, cy, cwidth, cheight, alpha) {
-                       /// <summary>绘制图象</summary>
+                       /// <summary>绘制图像</summary>
                        /// <param name="element" type="Object">要绘制的元素</param>
                        /// <param name="x" type="Number">起始X坐标</param>
                        /// <param name="y" type="Number">起始Y坐标</param>
@@ -1322,7 +1319,7 @@
                               width = Math.max(x1, x2) - x,
                               height = Math.max(y1, y2) - y;
 
-                      this.useConvert(x, y, width, height, function () {
+                      this.useTransform(x, y, width, height, function () {
                           var ctx = this.context;
                           ctx.lineWidth(lineWidth || 1.0);
 
@@ -1373,7 +1370,7 @@
 
                          var x = list[0], y = list[1], w = list[0], h = list[1];
 
-                         if (this.isBeginConvert) {
+                         if (this.isBeginTransform) {
                              for (var i = list.length; i > 0; i -= 2) {
                                  x = Math.min(list[i], x);
                                  y = Math.min(list[i + 1], y);
@@ -1383,12 +1380,12 @@
                              w -= x, h -= y;
                          }
 
-                         this.useConvert(x, y, w, h, function () {
+                         this.useTransform(x, y, w, h, function () {
                              var ctx = this.context;
                              ctx.lineWidth(lineWidth || 1.0);
 
                              beginPath.call(this);
-                             if (this.isBeginConvert) {
+                             if (this.isBeginTransform) {
                                  for (var i = list.length; i > 0; i -= 2)
                                      lineTo.call(this, (list[i] - x) + (-0.5 * w), (list[i + 1] - y) + (-0.5 * h));
                              } else {
@@ -1424,7 +1421,7 @@
 
                          var x = list[0], y = list[1], w = list[0], h = list[1];
 
-                         if (this.isBeginConvert) {
+                         if (this.isBeginTransform) {
                              for (var i = list.length; i > 0; i -= 2) {
                                  x = Math.min(list[i], x);
                                  y = Math.min(list[i + 1], y);
@@ -1434,11 +1431,11 @@
                              w -= x, h -= y;
                          }
 
-                         this.useConvert(x, y, w, h, function () {
+                         this.useTransform(x, y, w, h, function () {
                              var ctx = this.context;
 
                              beginPath.call(this);
-                             if (this.isBeginConvert) {
+                             if (this.isBeginTransform) {
                                  for (var i = list.length; i > 0; i -= 2)
                                      lineTo.call(this, (list[i] - x) + (-0.5 * w), (list[i + 1] - y) + (-0.5 * h));
                              } else {
@@ -1451,7 +1448,7 @@
                          });
                      })
     };
-    
+
     for (var i in webglFns) {
         Jyo.Renderer.WebGL.prototype[i] = webglFns[i];
     }

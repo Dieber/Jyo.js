@@ -85,7 +85,9 @@
         getIdentity: function () {
             /// <summary>获得单位矩阵</summary>
 
-            return Jyo.Matrix.identity.to33Array();
+            return [1.0, 0.0, 0.0,
+               0.0, 1.0, 0.0,
+               0.0, 0.0, 1.0];
         },
         setIdentity: function () {
             /// <summary>设置单位矩阵</summary>

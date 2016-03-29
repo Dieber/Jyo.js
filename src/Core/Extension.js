@@ -598,6 +598,22 @@
             return new Int16Array(buffer)[0] === 256;
         })();
 
+        DataView.prototype.getUint64 = function (pos) {
+            /// <summary>读取64位无符号整数</summary>
+            /// <param name="pos" type="Number">数据位置偏移</param>
+
+            var b1 = this.getUint8(pos),
+                  b2 = this.getUint8(pos + 1),
+                  b3 = this.getUint8(pos + 2),
+                  b4 = this.getUint8(pos + 3),
+                  b5 = this.getUint8(pos + 4),
+                  b6 = this.getUint8(pos + 5),
+                  b7 = this.getUint8(pos + 6),
+                  b8 = this.getUint8(pos + 7);
+
+            return b1 | b2 << 8 | b3 << 16 | b4 << 24 | b5 << 32 | b6 << 40 | b7 << 48 | b8 << 56;
+        };
+
         DataView.prototype.read7BitEncodedInt = function (pos) {
             /// <summary>读取7Bit编码整数</summary>
             /// <param name="pos" type="Number">数据位置偏移</param>

@@ -114,7 +114,7 @@
         }
     }
 
-    function recursiveRender(control, renderer, x, y) {
+    function recursiveRender(control, renderer, x, y, width, height) {
         /// <summary>递归渲染控件</summary>
         /// <param name="control" type="Jyo.UI.Base">控件对象</param>
         /// <param name="renderer" type="Jyo.Renderer">渲染器对象</param>
@@ -131,10 +131,12 @@
 
         x += control.left;
         y += control.top;
-        renderer.drawImage(control._subGraphics.canvas, x, y);
+        width = Math.min(width, control.parentControl.width) - x;
+        height = Math.min(height, control.parentControl.height) - y;
+        renderer.drawImage(control._subGraphics.canvas, x, y, width, height, 0, 0, width, height);
 
         for (var i = 0; i < control.childControls.length; i++) {
-            recursiveRender(control.childControls[i], renderer, x, y);
+            recursiveRender(control.childControls[i], renderer, x, y, width, height);
         }
     }
 
@@ -142,7 +144,7 @@
         /// <summary>递归更新控件</summary>
         /// <param name="control" type="Jyo.UI.Base">控件对象</param>
 
-        if (!(control instanceof Jyo.UI.Base)) return;
+        if (!(control instanceof Jyo.UI.Base) || !control.visible || !control.enable) return;
         control.fireEvent("layout");
 
         for (var i = 0; i < control.childControls.length; i++) {
@@ -165,6 +167,8 @@
         updateSize.apply(this);
         control.minContainerWidth = control._minContainerWidth;
         control.minContainerHeight = control._minContainerHeight;
+
+        this.fireEvent("controlschanged", { changedControl: control });
     }
 
     function removeControl(control) {
@@ -184,6 +188,8 @@
                 break;
             }
         }
+
+        this.fireEvent("controlschanged", { changedControl: control });
     }
 
     Jyo.UI.prototype = Object.create(Jyo.Object.prototype);
@@ -194,7 +200,7 @@
             /// <summary>执行全部渲染</summary>
 
             for (var i = 0; i < this.childControls.length; i++) {
-                recursiveRender(this.childControls[i], this.renderer, 0, 0);
+                recursiveRender(this.childControls[i], this.renderer, 0, 0, this.width, this.height);
             }
         },
         update: function () {
@@ -348,12 +354,11 @@
             /// <summary>创建一个图形控制器</summary>
 
             if (!!this._subGraphics) return this._subGraphics;
-            var _this = this;
             var canvas = document.createElement("canvas");
             var renderer = new Jyo.Renderer(canvas, "Canvas");
             renderer.fireEvent("resize", {
-                width: (renderer.width = _this.width),
-                height: (renderer.height = _this.height)
+                width: (renderer.width = this.width),
+                height: (renderer.height = this.height)
             });
             this._subGraphics = renderer;
             return renderer;

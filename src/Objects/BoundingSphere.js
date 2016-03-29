@@ -205,7 +205,7 @@
                             /// <returns type="Jyo.BoundingShpere" />
 
                             var transformedSphere = new Jyo.BoundingSphere(Jyo.Vector3.zero, 0);
-                            var scale3 = new Jyo.Vector3(this.radius, this.radius, this.radius);
+                            var scale3 = new Jyo.Vector3(this.radius);
                             Jyo.Vector3.transformNormal(scale3, transform);
                             transformedSphere.radius = Math.max(scale3.x, Math.max(scale3.y, scale3.z));
                             transformedSphere.center = new Jyo.Vector3();

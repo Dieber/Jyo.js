@@ -72,24 +72,7 @@
 
             ctx.putImageData(imageData, 0, 0);
 
-            xnb.map = function (tu, tv) {
-                /// <summary>返回对应UV产生的纹理坐标的像素颜色</summary>
-                /// <param name="tu" type="Number">材质水平方向U</param>
-                /// <param name="tv" type="Number">材质垂直方向V</param>
-                /// </returns type="Jyo.Color" />
-
-                // 如有必要使用%操作符进行运算
-                var u = Math.floor(Math.abs((tu * xnb.width) % xnb.width));
-                var v = Math.floor(Math.abs((tv * xnb.height) % xnb.height));
-                var pos = (u + v * xnb.width) * 4;
-
-                var r = imageData.data[pos];
-                var g = imageData.data[pos + 1];
-                var b = imageData.data[pos + 2];
-                var a = imageData.data[pos + 3];
-
-                return new Jyo.Color(r, g, b, a / 255);
-            };
+            xnb.map = map;
 
             canvas.toBlob(function (blob) {
                 // 数据内容对象
@@ -105,5 +88,24 @@
             });
         }
     };
+
+    function map(tu, tv) {
+        /// <summary>返回对应UV产生的纹理坐标的像素颜色</summary>
+        /// <param name="tu" type="Number">材质水平方向U</param>
+        /// <param name="tv" type="Number">材质垂直方向V</param>
+        /// </returns type="Jyo.Color" />
+
+        // 如有必要使用%操作符进行运算
+        var u = Math.floor(Math.abs((tu * xnb.width) % xnb.width));
+        var v = Math.floor(Math.abs((tv * xnb.height) % xnb.height));
+        var pos = (u + v * xnb.width) * 4;
+
+        var r = imageData.data[pos];
+        var g = imageData.data[pos + 1];
+        var b = imageData.data[pos + 2];
+        var a = imageData.data[pos + 3];
+
+        return new Jyo.Color(r, g, b, a / 255);
+    }
 
 })(window, document, Jyo);

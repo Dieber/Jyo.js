@@ -67,7 +67,7 @@
 
         var ctx = renderer.context;
         var arr = new Float32Array(vertexFloatData);
-        if (ctx instanceof WebGLRenderingContext) {
+        if (ctx instanceof WebGLRenderingContext || ctx instanceof WebGL2RenderingContext) {
             var buffer = ctx.createBuffer();
             ctx.bindBuffer(ctx.ARRAY_BUFFER, buffer);
             ctx.bufferData(ctx.ARRAY_BUFFER, arr, ctx.STATIC_DRAW);

@@ -25,7 +25,7 @@
 
         var ctx = renderer.context;
         var arr = new (is16Bit ? Int16Array : Int32Array)(indexData);
-        if (ctx instanceof WebGLRenderingContext) {
+        if (ctx instanceof WebGLRenderingContext || ctx instanceof WebGL2RenderingContext) {
             var buffer = ctx.createBuffer();
             ctx.bindBuffer(ctx.ELEMENT_ARRAY_BUFFER, buffer);
             ctx.bufferData(ctx.ELEMENT_ARRAY_BUFFER, arr, ctx.STATIC_DRAW);

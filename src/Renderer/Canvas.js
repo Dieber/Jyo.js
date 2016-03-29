@@ -4,20 +4,25 @@
     Jyo.Renderer.Canvas = function () {
         /// <summary>Canvas渲染器</summary>
         /// <field name="context" type="CanvasRenderingContext2D">2D画布渲染上下文</field>
-        
+
         Jyo.Object.call(this);
-        
+
+        var _this = this;
+
         this.context = this.canvas.getContext("2d");
 
         // 是否开始变换
-        this.isBeginConvert = false;
+        this.isBeginTransform = false;
 
         // 变换参数
         this.convertArrs = {
             rotate: null,
-            scaleX: null,
-            scaleY: null
+            scaleX: 1,
+            scaleY: 1
         };
+
+        this.backCanvas = document.createElement("canvas");
+        this.backContext = this.backCanvas.getContext("2d");
     };
 
     // 要创建的标签名
@@ -36,33 +41,41 @@
 
     Jyo.Renderer.Canvas.prototype = Object.create(Jyo.Object.prototype);
     Jyo.Renderer.Canvas.prototype.constructor = Jyo.Renderer.Canvas;
-    
+
     var canvasFns = {
         clear: function () {
             /// <summary>清空画布</summary>
 
             this.context.clearRect(0, 0, this.width, this.height);
+
+            if (typeof this.backBuffer != "undefined") {
+                this.backContext.putImageData(this.backBuffer, 0, 0);
+                // 将后台画布(3D专用)绘制在屏幕上
+                this.context.drawImage(this.backCanvas, 0, 0);
+                // 清空后台画布
+                this.backContext.clearRect(0, 0, this.width, this.height);
+            }
         },
-        beginConvert: function (rotate, scaleX, scaleY) {
+        beginTransform: function (rotate, scaleX, scaleY) {
             /// <summary>开始变换</summary>
             /// <param name="rotate" type="Number" optional="true">旋转值</param>
             /// <param name="scaleX" type="Number" optional="true">X缩放值</param>
             /// <param name="scaleY" type="Number" optional="true">Y缩放值</param>
 
-            this.isBeginConvert = true;
+            this.isBeginTransform = true;
             this.convertArrs.scaleX = scaleX || 1;
             this.convertArrs.scaleY = scaleY || 1;
             this.convertArrs.rotate = rotate || 0;
         },
-        endConvert: function () {
+        endTransform: function () {
             /// <summary>结束变换</summary>
 
-            this.isBeginConvert = false;
-            this.convertArrs.scaleX = 0;
-            this.convertArrs.scaleY = 0;
+            this.isBeginTransform = false;
+            this.convertArrs.scaleX = 1;
+            this.convertArrs.scaleY = 1;
             this.convertArrs.rotate = 0;
         },
-        useConvert: function (x, y, w, h, callback) {
+        useTransform: function (x, y, w, h, callback, canRun) {
             /// <summary>使用变换绘制</summary>
             /// <param name="x" type="Number">X位置</param>
             /// <param name="y" type="Number">Y位置</param>
@@ -73,7 +86,11 @@
             var t = this.convertArrs,
                    ctx = this.context;
 
-            if (!this.isBeginConvert || (!x && !y && !w && !h)) {
+            if (!canRun && this.isBeginTransform) {
+                throw "只有drawImage函数可以使用变换";
+            }
+
+            if (!this.isBeginTransform || (!x && !y && !w && !h)) {
                 callback.call(this);
             } else {
                 ctx.translate(x + w * 0.5, y + h * 0.5);
@@ -134,10 +151,10 @@
                       /// <param name="colorStr" type="String">颜色字符串值</param>
 
                       var ctx = this.context;
-                      this.useConvert(x, y, width, height, function () {
+                      this.useTransform(x, y, width, height, function () {
                           ctx = this.context;
                           ctx.fillStyle = colorStr;
-                          if (this.isBeginConvert) ctx.fillRect(-0.5 * width, -0.5 * height, width, height);
+                          if (this.isBeginTransform) ctx.fillRect(-0.5 * width, -0.5 * height, width, height);
                           else ctx.fillRect(x, y, width, height);
                       });
                   }),
@@ -220,10 +237,10 @@
                       /// <param name="lineWidth" type="Number">线条宽度</param>
 
                       var ctx = this.context;
-                      this.useConvert(x, y, width, height, function () {
+                      this.useTransform(x, y, width, height, function () {
                           ctx.lineWidth = lineWidth;
                           ctx.strokeStyle = colorStr;
-                          if (this.isBeginConvert) {
+                          if (this.isBeginTransform) {
                               width = width - lineWidth,
                               height = height - lineWidth;
                               ctx.strokeRect(-0.5 * width, -0.5 * height, width, height);
@@ -430,13 +447,13 @@
                        element = element.object || element;
                        var w = element.width,
                               h = element.height;
-                       this.useConvert(x, y, element.width, element.height, function () {
-                           if (this.isBeginConvert) {
+                       this.useTransform(x, y, element.width, element.height, function () {
+                           if (this.isBeginTransform) {
                                x = -0.5 * w;
                                y = -0.5 * h;
                            }
                            this.context.drawImage(element, x, y);
-                       });
+                       }, !0);
                    }).
                    add("any, Number, Number, Number", function (element, x, y, alpha) {
                        /// <summary>绘制图象</summary>
@@ -497,13 +514,13 @@
                        /// <param name="height" type="Number">图像高度</param>
 
                        element = element.object || element;
-                       this.useConvert(x, y, width, height, function () {
-                           if (this.isBeginConvert) {
+                       this.useTransform(x, y, width, height, function () {
+                           if (this.isBeginTransform) {
                                x = -0.5 * width;
                                y = -0.5 * height;
                            }
                            this.context.drawImage(element, x, y, width, height);
-                       });
+                       }, !0);
                    }).
                    add("any, Number, Number, Number, Number, Number", function (element, x, y, width, height, alpha) {
                        /// <summary>绘制图象</summary>
@@ -584,13 +601,13 @@
                        /// <param name="cheight" type="Number">在原图坐标上进行剪裁的图像高度</param>
 
                        element = element.object || element;
-                       this.useConvert(x, y, width, height, function () {
-                           if (this.isBeginConvert) {
+                       this.useTransform(x, y, width, height, function () {
+                           if (this.isBeginTransform) {
                                x = -0.5 * width;
                                y = -0.5 * height;
                            }
                            this.context.drawImage(element, cx, cy, cwidth, cheight, x, y, width, height);
-                       });
+                       }, !0);
                    }).
                    add("any, Number, Number, Number, Number, Number, Number, Number, Number, Number", function (element, x, y, width, height, cx, cy, cwidth, cheight, alpha) {
                        /// <summary>绘制图象</summary>
@@ -662,7 +679,7 @@
                       var strList = (str + "").split(/\r\n|\n|\r/ig);
                       var fontSize = this.getTextSize(strList[0], ctx.font);
 
-                      this.useConvert(x, y, fontSize.width, fontSize.height, function () {
+                      this.useTransform(x, y, fontSize.width, fontSize.height, function () {
                           for (var i = 0; i < strList.length; i++) {
                               ctx.fillText(strList[i], x, y + fontSize.height * (i + 0.76));
                           }
@@ -724,7 +741,7 @@
                              width = Math.max(x1, x2) - x,
                              height = Math.max(y1, y2) - y;
 
-                      this.useConvert(x, y, width, height, function () {
+                      this.useTransform(x, y, width, height, function () {
                           ctx.strokeStyle = colorStr || "#000000";
                           ctx.lineWidth = lineWidth || 1.0;
 
@@ -775,7 +792,7 @@
 
                          var x = list[0], y = list[1], w = list[0], h = list[1];
 
-                         if (this.isBeginConvert) {
+                         if (this.isBeginTransform) {
                              for (var i = list.length; i > 0; i -= 2) {
                                  x = Math.min(list[i], x);
                                  y = Math.min(list[i + 1], y);
@@ -787,12 +804,12 @@
 
                          var ctx = this.context;
 
-                         this.useConvert(x, y, w, h, function () {
+                         this.useTransform(x, y, w, h, function () {
                              ctx.strokeStyle = colorStr || "#000000";
                              ctx.lineWidth = lineWidth || 1.0;
 
                              ctx.beginPath();
-                             if (this.isBeginConvert) {
+                             if (this.isBeginTransform) {
                                  for (var i = list.length; i > 0; i -= 2)
                                      ctx.lineTo((list[i] - x) + (-0.5 * w), (list[i + 1] - y) + (-0.5 * h));
                              } else {
@@ -828,7 +845,7 @@
 
                          var x = list[0], y = list[1], w = list[0], h = list[1];
 
-                         if (this.isBeginConvert) {
+                         if (this.isBeginTransform) {
                              for (var i = list.length; i > 0; i -= 2) {
                                  x = Math.min(list[i], x);
                                  y = Math.min(list[i + 1], y);
@@ -842,9 +859,9 @@
 
                          ctx.fillStyle = colorStr || "#000000";
 
-                         this.useConvert(x, y, w, h, function () {
+                         this.useTransform(x, y, w, h, function () {
                              ctx.beginPath();
-                             if (this.isBeginConvert) {
+                             if (this.isBeginTransform) {
                                  for (var i = list.length; i > 0; i -= 2)
                                      ctx.lineTo((list[i] - x) + (-0.5 * w), (list[i + 1] - y) + (-0.5 * h));
                              } else {
@@ -857,7 +874,7 @@
                          });
                      })
     };
-    
+
     for (var i in canvasFns) {
         Jyo.Renderer.Canvas.prototype[i] = canvasFns[i];
     }

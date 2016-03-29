@@ -91,32 +91,35 @@
                   //    }
                   //}
               }).
-              add("WebGLRenderingContext", function (gl) {
-                  /// <summary>绘制模型网格</summary>
-                  /// <param name="gl" type="WebGLRenderingContext">WebGL上下文</param>
-
-                  for (var i = 0; i < this.meshParts.length; i++) {
-                      var part = this.meshParts[i];
-                      var effect = part.effect;
-
-                      if (part.primitiveCount > 0) {
-                          gl.bindBuffer(gl.ARRAY_BUFFER, part.vertexBuffer.buffer);
-                          gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, part.indexBuffer.buffer);
-
-                          var shortIndices = part.indexBuffer.indexElementSize == "SixteenBits";
-
-                          var indexElementType = shortIndices ? gl.UNSIGNED_SHORT : gl.UNSIGNED_BYTE;
-                          var indexElementSize = shortIndices ? 2 : 4;
-                          var indexOffsetInBytes = (part.startIndex * indexElementSize);
-                          var indexElementCount = part.primitiveCount * 3;
-
-                          effect.apply(part);
-
-                          gl.drawElements(gl.TRIANGLES, indexElementCount, indexElementType, indexOffsetInBytes);
-                      }
-                  }
-              })
+              add("WebGL2RenderingContext", drawWebGL).
+              add("WebGLRenderingContext", drawWebGL)
     };
+
+    function drawWebGL(gl) {
+        /// <summary>绘制模型网格</summary>
+        /// <param name="gl" type="WebGLRenderingContext">WebGL上下文</param>
+
+        for (var i = 0; i < this.meshParts.length; i++) {
+            var part = this.meshParts[i];
+            var effect = part.effect;
+
+            if (part.primitiveCount > 0) {
+                gl.bindBuffer(gl.ARRAY_BUFFER, part.vertexBuffer.buffer);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, part.indexBuffer.buffer);
+
+                var shortIndices = part.indexBuffer.indexElementSize == "SixteenBits";
+
+                var indexElementType = shortIndices ? gl.UNSIGNED_SHORT : gl.UNSIGNED_BYTE;
+                var indexElementSize = shortIndices ? 2 : 4;
+                var indexOffsetInBytes = (part.startIndex * indexElementSize);
+                var indexElementCount = part.primitiveCount * 3;
+
+                effect.apply(part);
+
+                gl.drawElements(gl.TRIANGLES, indexElementCount, indexElementType, indexOffsetInBytes);
+            }
+        }
+    }
 
     var sharedDrawBoneMatrices = [];
 

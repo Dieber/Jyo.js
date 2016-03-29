@@ -161,7 +161,7 @@
     };
 
     Jyo.BasicEffect.prototype = Object.create(Jyo.Effect.prototype);
-    Jyo.BasicEffect.prototype.constructor = Jyo.BasicEffect; 
+    Jyo.BasicEffect.prototype.constructor = Jyo.BasicEffect;
 
     Jyo.BasicEffect.prototype.initProgram = function (ctx) {
         /// <summary>初始化着色程序</summary>
@@ -184,8 +184,8 @@
                                           /// <param name="part" type="Jyo.ModelMeshPart">模型网格部件</param>
 
                                           var ctx = this._renderer.context;
-                                          this._apply(ctx, part);
-                                          this.apply(ctx, part);
+                                          this._apply.call(this, ctx, part);
+                                          this.apply.call(this, ctx, part);
                                           return true;
                                       }).
                                       add("CanvasRenderingContext2D, Jyo.ModelMeshPart", function (ctx, part) {
@@ -195,38 +195,41 @@
 
                                           //console.log("2D模型效果应用");
                                       }).
-                                      add("WebGLRenderingContext, Jyo.ModelMeshPart", function (gl, part) {
-                                          /// <summary>应用效果</summary>
-                                          /// <param name="gl" type="WebGLRenderingContext">WebGL渲染上下文</param>
-                                          /// <param name="part" type="Jyo.ModelMeshPart">模型网格部件</param>
+                                      add("WebGL2RenderingContext, Jyo.ModelMeshPart", applyWebGL).
+                                      add("WebGLRenderingContext, Jyo.ModelMeshPart", applyWebGL);
 
-                                          var program = this.program;
+    function applyWebGL(gl, part) {
+        /// <summary>应用效果</summary>
+        /// <param name="gl" type="WebGLRenderingContext">WebGL渲染上下文</param>
+        /// <param name="part" type="Jyo.ModelMeshPart">模型网格部件</param>
 
-                                          gl.uniformMatrix4fv(program.invMatrixUniform, false, Jyo.Matrix.inverse(this.world).to44Array());
-                                          gl.uniform3fv(program.lightDirectionUniform, this.lightDirection.toArray());
-                                          gl.uniform3fv(program.eyeDirectionUniform, this.view.eyeDirection.toArray());
-                                          gl.uniform4fv(program.ambientColorUniform, [30 / 255, 30 / 255, 30 / 255, 1.0]);
+        var program = this.program;
 
-                                          imageBreak: if (part.effect.textureEnable) {
-                                              gl.activeTexture(gl.TEXTURE0);
+        gl.uniformMatrix4fv(program.invMatrixUniform, false, Jyo.Matrix.inverse(this.world).to44Array());
+        gl.uniform3fv(program.lightDirectionUniform, this.lightDirection.toArray());
+        gl.uniform3fv(program.eyeDirectionUniform, this.view.eyeDirection.toArray());
+        gl.uniform4fv(program.ambientColorUniform, [30 / 255, 30 / 255, 30 / 255, 1.0]);
 
-                                              var element = part.effect.texture.object || part.effect.texture;
-                                              if ((element instanceof Jyo.Xnb) && element.type !== "image") {
-                                                  break imageBreak;
-                                              }
+        imageBreak: if (part.effect.textureEnable) {
+            gl.activeTexture(gl.TEXTURE0);
 
-                                              if (!!element.glTexture) {
-                                                  element = element.glTexture;
-                                              } else if (!(element instanceof WebGLTexture)) {
-                                                  if (!element.glTexture) element.glTexture = this._renderer._bindTexture(element, element.width, element.height, null);
-                                                  else this._renderer._bindTexture(element, element.width, element.height, element.glTexture);
-                                                  element = element.glTexture;
-                                              }
+            var element = part.effect.texture.object || part.effect.texture;
+            if ((element instanceof Jyo.Xnb) && element.type !== "image") {
+                break imageBreak;
+            }
 
-                                              gl.bindTexture(gl.TEXTURE_2D, element);
-                                              gl.uniform1i(program.diffuseSamplerUniform, 0.5);
-                                              gl.uniform1i(program.emissiveSamplerUniform, 0);
-                                          }
-                                      });
+            if (!!element.glTexture) {
+                element = element.glTexture;
+            } else if (!(element instanceof WebGLTexture)) {
+                if (!element.glTexture) element.glTexture = this._renderer._bindTexture(element, element.width, element.height, null);
+                else this._renderer._bindTexture(element, element.width, element.height, element.glTexture);
+                element = element.glTexture;
+            }
+
+            gl.bindTexture(gl.TEXTURE_2D, element);
+            gl.uniform1i(program.diffuseSamplerUniform, 0.5);
+            gl.uniform1i(program.emissiveSamplerUniform, 0);
+        }
+    }
 
 })(window, document, Jyo);

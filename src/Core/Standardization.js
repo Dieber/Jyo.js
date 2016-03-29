@@ -13,8 +13,8 @@
         }
 
         var styles = window.getComputedStyle(document.documentElement, ''),
-            pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms)-/))[1],
-            dom = ('WebKit|Moz|MS').match(new RegExp('(' + pre + ')', 'i'))[1];
+            pre = (Array.prototype.slice.call(styles).join('').match(/-(moz|webkit|ms|o)-/))[1],
+            dom = ('WebKit|Moz|MS|O').match(new RegExp('(' + pre + ')', 'i'))[1];
         return { dom: dom, lowercase: pre, css: "-" + pre + "-", js: pre[0].toUpperCase() + pre.substr(1) };
     })();
 

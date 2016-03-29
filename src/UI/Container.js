@@ -3,7 +3,7 @@
 
     Jyo.UI.Container = function () {
         /// <summary>容器基础类</summary>
-        
+
         Jyo.UI.Scrollable.call(this);
 
         var backColor = new Jyo.Color("#F3F3F3");
@@ -50,7 +50,7 @@
         this.addEventListener("resize", function resize() {
 
             return resize;
-        } (), false);
+        }(), false);
 
         this.addEventListener("drawbackground", drawBackground, false);
 
@@ -68,12 +68,13 @@
     function drawBackground(e) {
         /// <summary>绘制背景</summary>
         /// <param name="e" type="Object">参数</param>
-        
+
         var renderer = e.renderer;
 
         renderer.fillRect(0, 0, this.width, this.height, this.backColor);
         if (!!this.backgroundImage) {
             var img = this.backgroundImage;
+            if (img instanceof Jyo.Xnb) img = img.object;
             switch (this.backgroundImageLayout) {
                 case backgroundImageLayoutValues[0]:
                     // tile
@@ -107,9 +108,9 @@
             }
         }
     }
-    
+
     Jyo.UI.Container.prototype = Object.create(Jyo.UI.Scrollable.prototype);
-    Jyo.UI.Container.prototype.constructor = Jyo.UI.Container;  
+    Jyo.UI.Container.prototype.constructor = Jyo.UI.Container;
 
     var fns = {
 

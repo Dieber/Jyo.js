@@ -51,51 +51,8 @@
 
                     //console.log("2D模型效果应用");
                 }).
-                add("WebGLRenderingContext, Jyo.ModelMeshPart", function (gl, part) {
-                    /// <summary>应用效果</summary>
-                    /// <param name="gl" type="WebGLRenderingContext">WebGL上下文对象</param>
-                    /// <param name="part" type="Jyo.ModelMeshPart">模型网格部分对象</param>
-
-                    var program = this.program;
-
-                    gl.useProgram(program);
-
-                    var declaration = part.vertexBuffer.declaration;
-
-                    var vertexOffset = declaration.vertexStride * part.vertexOffset;
-
-                    var positionOffset = 0;
-                    var normalOffset = 0;
-                    var textureCoordOffset = 0;
-                    for (var i in declaration.elements) {
-                        var el = declaration.elements[i];
-                        var usage = el.vertexElementUsage;
-                        if (usage == "Position" && !positionOffset) {
-                            positionOffset = el.offset;
-                        } else if (usage == "Normal" && !normalOffset) {
-                            normalOffset = el.offset;
-                        } else if (usage == "TextureCoordinate" && !textureCoordOffset) {
-                            textureCoordOffset = el.offset;
-                        }
-                    }
-
-                    gl.vertexAttribPointer(program.vertexPositionAttribute, 3, gl.FLOAT, false, declaration.vertexStride, positionOffset + vertexOffset);
-                    gl.vertexAttribPointer(program.vertexNormalAttribute, 3, gl.FLOAT, false, declaration.vertexStride, normalOffset + vertexOffset);
-                    gl.vertexAttribPointer(program.vertexTextureCoordAttribute, 2, gl.FLOAT, false, declaration.vertexStride, textureCoordOffset + vertexOffset);
-
-                    gl.enableVertexAttribArray(program.vertexPositionAttribute);
-                    gl.enableVertexAttribArray(program.vertexNormalAttribute);
-                    gl.enableVertexAttribArray(program.vertexTextureCoordAttribute);
-
-                    // 世界矩阵设置
-                    gl.uniformMatrix4fv(program.worldMatrixUniform, false, this.world.to44Array());
-
-                    // 投影矩阵设置
-                    gl.uniformMatrix4fv(program.projectionMatrixUniform, false, this.projection.to44Array());
-
-                    // 视图矩阵设置
-                    gl.uniformMatrix4fv(program.viewMatrixUniform, false, this.view.to44Array());
-                }),
+                add("WebGL2RenderingContext, Jyo.ModelMeshPart", _applyWebGL).
+                add("WebGLRenderingContext, Jyo.ModelMeshPart", _applyWebGL),
         destroy: function () {
             /// <summary>销毁</summary>
 
@@ -109,5 +66,51 @@
             for (var i in this) delete this[i];
         }
     };
+
+    function _applyWebGL(gl, part) {
+        /// <summary>应用效果</summary>
+        /// <param name="gl" type="WebGLRenderingContext">WebGL上下文对象</param>
+        /// <param name="part" type="Jyo.ModelMeshPart">模型网格部分对象</param>
+
+        var program = this.program;
+
+        gl.useProgram(program);
+
+        var declaration = part.vertexBuffer.declaration;
+
+        var vertexOffset = declaration.vertexStride * part.vertexOffset;
+
+        var positionOffset = 0;
+        var normalOffset = 0;
+        var textureCoordOffset = 0;
+        for (var i in declaration.elements) {
+            var el = declaration.elements[i];
+            var usage = el.vertexElementUsage;
+            if (usage == "Position" && !positionOffset) {
+                positionOffset = el.offset;
+            } else if (usage == "Normal" && !normalOffset) {
+                normalOffset = el.offset;
+            } else if (usage == "TextureCoordinate" && !textureCoordOffset) {
+                textureCoordOffset = el.offset;
+            }
+        }
+
+        gl.vertexAttribPointer(program.vertexPositionAttribute, 3, gl.FLOAT, false, declaration.vertexStride, positionOffset + vertexOffset);
+        gl.vertexAttribPointer(program.vertexNormalAttribute, 3, gl.FLOAT, false, declaration.vertexStride, normalOffset + vertexOffset);
+        gl.vertexAttribPointer(program.vertexTextureCoordAttribute, 2, gl.FLOAT, false, declaration.vertexStride, textureCoordOffset + vertexOffset);
+
+        gl.enableVertexAttribArray(program.vertexPositionAttribute);
+        gl.enableVertexAttribArray(program.vertexNormalAttribute);
+        gl.enableVertexAttribArray(program.vertexTextureCoordAttribute);
+
+        // 世界矩阵设置
+        gl.uniformMatrix4fv(program.worldMatrixUniform, false, this.world.to44Array());
+
+        // 投影矩阵设置
+        gl.uniformMatrix4fv(program.projectionMatrixUniform, false, this.projection.to44Array());
+
+        // 视图矩阵设置
+        gl.uniformMatrix4fv(program.viewMatrixUniform, false, this.view.to44Array());
+    }
 
 })(window, document, Jyo);

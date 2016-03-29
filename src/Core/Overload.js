@@ -27,7 +27,7 @@
                 //case "Object":
                 //case "Function":
             default:
-                return eval(str);
+                return eval("typeof " + str + "!='undefined'?" + str + ':null');
         }
 
     }
@@ -56,7 +56,7 @@
             /// <summary>调用重载函数</summary>
 
             var len = _paramList.length,
-                pList = null;
+                  pList = null;
 
             if (!len) throw new Error("Function not implemented");
 

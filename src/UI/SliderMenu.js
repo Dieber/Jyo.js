@@ -3,14 +3,14 @@
 
     Jyo.UI.SliderMenu = function () {
         /// <summary>滑动侧边栏</summary>
-        
+
         Jyo.UI.Container.call(this);
 
         var _this = this;
         this.left = "-80%";
         this.width = "80%";
         this.height = "100%";
-        this.showOrHideSpped = 0.064;
+        this.showOrHideSpped = 30;
 
         var location = "left";
         Object.defineProperty(this, "location", {
@@ -30,7 +30,7 @@
         this.addEventListener("resize", function resize() {
             _this.location = location;
             return resize;
-        } (), false);
+        }(), false);
 
         this.addEventListener("layout", layout, false);
 
@@ -50,23 +50,23 @@
     function layout(e) {
         /// <summary>布局</summary>
         /// <param name="e" type="Object">参数</param>
-        
+
         if (this._showing) updateShowing.call(this);
         else if (this._hidding) updateHidding.call(this);
     }
 
     function updateShowing() {
         /// <summar>显示数据更新</summary>
-        
+
         var isOver = false;
         switch (this.location) {
             case "left":
-                if (this.left < this._overValue) this.left += this.width * this.showOrHideSpped;
-                else isOver = true;
+                this.left += this.width / this.showOrHideSpped;
+                if (this.left >= this._overValue) isOver = true;
                 break;
             case "right":
-                if (this.left > this._overValue) this.left -= this.width * this.showOrHideSpped;
-                else isOver = true;
+                this.left -= this.width / this.showOrHideSpped;
+                if (this.left <= this._overValue) isOver = true;
                 break;
         }
         if (isOver) {
@@ -78,16 +78,16 @@
 
     function updateHidding() {
         /// <summar>隐藏数据更新</summary>
-        
+
         var isOver = false;
         switch (this.location) {
             case "left":
-                if (this.left > this._overValue) this.left -= this.width * this.showOrHideSpped;
-                else isOver = true;
+                this.left -= this.width / this.showOrHideSpped;
+                if (this.left <= this._overValue) isOver = true;
                 break;
             case "right":
-                if (this.left < this._overValue) this.left += this.width * this.showOrHideSpped;
-                else isOver = true;
+                this.left += this.width / this.showOrHideSpped;
+                if (this.left >= this._overValue) isOver = true;
                 break;
         }
         if (isOver) {
@@ -104,27 +104,27 @@
         show: function (overValue) {
             /// <summary>显示侧边栏</summary>
             /// <param name="overValue" type="Number or String">目标位置</param>
-            
+
             if (!!this._showing || !!this._hidding || !this.visible) return;
             this._showing = true;
-            if(typeof overValue != "undefined"){
+            if (typeof overValue != "undefined") {
                 var num = this._numConvert(overValue, this.parentControl.width);
-                if(typeof num == "number"){
+                if (typeof num == "number") {
                     this._overValue = num;
                     return;
                 }
-            } 
+            }
             this._overValue = this.location == "left" ? 0 : this.parentControl.width - this.width;
         },
         hide: function (overValue) {
             /// <summary>隐藏侧边栏</summary>
             /// <param name="overValue" type="Number or String">目标位置</param>
-            
+
             if (!!this._showing || !!this._hidding || !this.visible) return;
             this._hidding = true;
-            if(typeof overValue != "undefined"){
+            if (typeof overValue != "undefined") {
                 var num = this._numConvert(overValue, this.parentControl.width);
-                if(typeof num == "number"){
+                if (typeof num == "number") {
                     this._overValue = num;
                     return;
                 }

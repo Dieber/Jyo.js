@@ -177,7 +177,10 @@
                                  "cursor: default;",
                                  "-webkit-tap-highlight-color: transparent;",
                                  "-webkit-user-select: none; ",
-                                 "-webkit-touch-callout: none;"
+                                 "-webkit-touch-callout: none;",
+                                 "transform: translateZ(0);",
+                                 "-webkit-transform: translateZ(0);",
+                                 "-moz-transform: translateZ(0);"
         ].join("");
         if (this.container.childNodes.length) {
             this.container.insertBefore(element, this.container.childNodes[0]);
