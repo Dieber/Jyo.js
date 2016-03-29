@@ -19,11 +19,19 @@
             }
         });
 
+<<<<<<< HEAD
         var verticalScrollbar = new Jyo.UI.Scrollbar(this);
+=======
+        var verticalScrollbar = new Jyo.UI.Scrollbar();
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         verticalScrollbar.direction = "vertical";
         Object.defineProperty(this, "verticalScrollbar", {
             get: function () { return verticalScrollbar; }
         });
+<<<<<<< HEAD
+=======
+        this.addControl(verticalScrollbar);
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
 
         var horizontalScroll = false;
         Object.defineProperty(this, "horizontalScroll", {
@@ -34,11 +42,19 @@
             }
         });
 
+<<<<<<< HEAD
         var horizontalScrollbar = new Jyo.UI.Scrollbar(this);
+=======
+        var horizontalScrollbar = new Jyo.UI.Scrollbar();
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         horizontalScrollbar.direction = "horizontal";
         Object.defineProperty(this, "horizontalScrollbar", {
             get: function () { return horizontalScrollbar; }
         });
+<<<<<<< HEAD
+=======
+        this.addControl(horizontalScrollbar);
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
 
         var autoSize = false;
         Object.defineProperty(this, "autoSize", {
@@ -49,7 +65,11 @@
             }
         });
 
+<<<<<<< HEAD
         var autoScroll = true;
+=======
+        var autoScroll = false;
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         Object.defineProperty(this, "autoScroll", {
             get: function () { return autoScroll; },
             set: function (value) {
@@ -61,7 +81,7 @@
         this.addEventListener("resize", function resize() {
 
             return resize;
-        }(), false);
+        } (), false);
 
         this.addEventListener("layout", layout, false);
 
@@ -78,10 +98,14 @@
                 return 0;
             });
         }, false);
+<<<<<<< HEAD
 
         this.addControl(verticalScrollbar);
         this.addControl(horizontalScrollbar);
 
+=======
+        
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         setScrollbar.call(this);
     };
 
@@ -125,7 +149,11 @@
     function getInnerSize() {
         /// <summary>获取内部尺寸</summary>
         /// <returns type="Object" />
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         var size = { width: 0, height: 0 };
 
         var cc = this.childControls;
@@ -138,6 +166,7 @@
 
     function setScrollbar() {
         /// <summary>设置滚动条</summary>
+<<<<<<< HEAD
 
         this.verticalScrollbar.visible = true;
         this.horizontalScrollbar.visible = true;
@@ -148,6 +177,17 @@
         } else {
             this.verticalScrollbar.visible = this.verticalScroll;
             this.horizontalScrollbar.visible = this.horizontalScroll;
+=======
+    
+        if (!!this.autoSize || !this.autoScroll) {
+            this.verticalScrollbar.visible = false;
+            this.horizontalScrollbar.visible = false;
+        } else {
+            if (this.verticalScroll) this.verticalScrollbar.visible = true;
+            else this.verticalScrollbar.visible = false;
+            if (this.horizontalScroll) this.horizontalScrollbar.visible = true;
+            else this.horizontalScrollbar.visible = false;
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         }
     }
 

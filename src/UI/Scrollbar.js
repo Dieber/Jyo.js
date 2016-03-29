@@ -1,6 +1,7 @@
 ﻿(function (window, document, Jyo, undefined) {
     "use strict";
 
+<<<<<<< HEAD
     Jyo.UI.Scrollbar = function (control) {
         /// <summary>滚动条控件</summary>
         /// <field name="direction" type="String">指示这是一个纵向滚动条还是横向滚动条</field>
@@ -10,11 +11,20 @@
 
         this._control = control;
 
+=======
+    Jyo.UI.Scrollbar = function () {
+        /// <summary>滚动条控件</summary>
+        /// <field name="direction" type="String">指示这是一个纵向滚动条还是横向滚动条</field>
+
+        Jyo.UI.Base.call(this);
+
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
         var direction = "vertical";
         Object.defineProperty(this, "direction", {
             get: function () { return direction; },
             set: function (value) {
                 if (value != "vertical" && value != "horizontal") return;
+<<<<<<< HEAD
                 switch (direction = value) {
                     case "vertical":
                         this.width = 5;
@@ -32,17 +42,39 @@
 
             return resize;
         }(), false);
+=======
+                direction = value;
+            }
+        });
+
+        this.addEventListener("resize", function resize() {
+
+            return resize;
+        } (), false);
+
+        this.addEventListener("layout", layout, false);
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
 
         this.addEventListener("drawbackground", drawBackground, false);
 
         this.addEventListener("visiblechanged", visibleChanged, false);
     };
 
+<<<<<<< HEAD
+=======
+    function layout(e) {
+        /// <summary>布局</summary>
+        /// <param name="e" type="Object">参数</param>
+
+    }
+
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
     function drawBackground(e) {
         /// <summary>绘制背景</summary>
         /// <param name="e" type="Object">参数</param>
 
         var renderer = e.renderer;
+<<<<<<< HEAD
         var c = this._control;
 
         switch (this.direction) {
@@ -55,6 +87,9 @@
                 // 绘制横向滚动条
                 break;
         }
+=======
+
+>>>>>>> 037aa92d2c5e6ee5700a2602d459bd6abf972268
     }
 
     function visibleChanged(e) {
